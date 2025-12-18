@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { buildWhatsAppLink } from '../constants/whatsapp'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:4000'
 
@@ -32,6 +33,7 @@ export default function TravelCard({ tour }) {
   }, [tour])
 
   // voucher validation removed from card; handled on tour detail page
+  const customizeMessage = `Hi, I would like to customize a trip.${tour.title ? ` Package: ${tour.title}.` : ''}${tour.location ? ` Destination: ${tour.location}.` : ''}${tour.days ? ` Duration: ${tour.days} days.` : ''}`
 
   return (
     <article className="trend-card">
@@ -52,6 +54,15 @@ export default function TravelCard({ tour }) {
           >
             View Details
           </button>
+          <a
+            className="btn btn--ghost"
+            href={buildWhatsAppLink(customizeMessage)}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Customize trip for ${tour.title || 'this package'} via WhatsApp`}
+          >
+            Customize 
+          </a>
           <button
             className="btn btn--ghost"
             onClick={shareTour}

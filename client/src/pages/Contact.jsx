@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 
 export default function Contact() {
   const nav = useNavigate()
-  const [formData, setFormData] = useState({ name: '', email: '', message: '' })
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: '' })
   const [submitted, setSubmitted] = useState(false)
 
   const handleChange = (e) => {
@@ -16,7 +16,7 @@ export default function Contact() {
     console.log('Message submitted:', formData)
     setSubmitted(true)
     setTimeout(() => {
-      setFormData({ name: '', email: '', message: '' })
+      setFormData({ name: '', email: '', phone: '', message: '' })
       setSubmitted(false)
     }, 3000)
   }
@@ -171,6 +171,37 @@ export default function Contact() {
                   onChange={handleChange}
                   placeholder="john@example.com"
                   required
+                  style={{
+                    width: '100%',
+                    padding: '12px 14px',
+                    border: '1px solid #e6e6e6',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    fontFamily: 'Poppins, sans-serif',
+                    boxSizing: 'border-box',
+                    transition: 'all 200ms'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#3f51b5'
+                    e.target.style.boxShadow = '0 0 0 3px rgba(63, 81, 181, 0.1)'
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#e6e6e6'
+                    e.target.style.boxShadow = 'none'
+                  }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ display: 'block', color: '#111', fontWeight: '600', marginBottom: '8px', fontSize: '14px' }}>
+                  Phone Number
+                </label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  placeholder="+977 98********"
                   style={{
                     width: '100%',
                     padding: '12px 14px',

@@ -10,14 +10,13 @@ const voucherRoutes = require('./routes/vouchers')
 const tourRoutes = require('./routes/tours')
 const reviewRoutes = require('./routes/reviews')
 const uploadRoutes = require('./routes/upload')
-const galleryRoutes = require('./routes/gallery')
 
 const app = express()
 app.use(cors())
 app.use(express.json({ limit: '10mb' }))
 
-// serve uploaded images from client/public/images so both frontend and API share assets
-app.use('/images', express.static(path.join(__dirname, '..', 'client', 'public', 'images')))
+// serve uploaded images from project images folder
+app.use('/images', express.static(path.join(__dirname, '..', 'images')))
 
 app.use('/api/auth', authRoutes)
 app.use('/api/blogs', blogRoutes)
@@ -25,7 +24,6 @@ app.use('/api/vouchers', voucherRoutes)
 app.use('/api/tours', tourRoutes)
 app.use('/api/reviews', reviewRoutes)
 app.use('/api/upload', uploadRoutes)
-app.use('/api/gallery', galleryRoutes)
 
 const PORT = process.env.PORT || 4000
 

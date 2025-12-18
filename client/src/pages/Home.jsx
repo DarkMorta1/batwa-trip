@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Banner from '../components/Banner'
 import TravelCard from '../components/TravelCard'
 import localTours from '../data/tours'
 import localBlogs from '../data/blogs'
-import { useEffect } from 'react'
+import { buildWhatsAppLink } from '../constants/whatsapp'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:4000'
 import { useNavigate } from 'react-router-dom'
@@ -18,12 +18,14 @@ const memoryPhotos = [
 ]
 
 export default function Home() {
-  const [tours, setTours] = React.useState(localTours)
-  const [blogs, setBlogs] = React.useState(localBlogs)
-  const [reviews, setReviews] = React.useState([])
-  const [showReviewForm, setShowReviewForm] = React.useState(false)
-  const [reviewForm, setReviewForm] = React.useState({ author:'', rating:5, message:'' })
-  const [reviewMessage, setReviewMessage] = React.useState('')
+  const [tours, setTours] = useState(localTours)
+  const [blogs, setBlogs] = useState(localBlogs)
+  const [reviews, setReviews] = useState([])
+  const [showReviewForm, setShowReviewForm] = useState(false)
+  const [reviewForm, setReviewForm] = useState({ author:'', rating:5, message:'' })
+  const [reviewMessage, setReviewMessage] = useState('')
+  const [showAllUpcoming, setShowAllUpcoming] = useState(false)
+  const [showAllAvailable, setShowAllAvailable] = useState(false)
   useEffect(() => {
     // try fetching from backend; fallback to local data if unavailable
     fetch(`${API}/api/tours`).then(r=>r.json()).then(data=>setTours(data.map(d=>({ ...d, id: d.id || d._id })))).catch(()=>{})
@@ -33,6 +35,8 @@ export default function Home() {
 
   const trending = tours.filter(t => t.trending)
   const upcoming = tours.filter(t=>t.upcoming)
+  const visibleUpcoming = showAllUpcoming ? upcoming : upcoming.slice(0, 3)
+  const visibleAvailable = showAllAvailable ? trending : trending.slice(0, 3)
   const nav = useNavigate()
   
   return (
@@ -40,22 +44,47 @@ export default function Home() {
       <Banner />
 
       <section className="section">
-        <h2 className="section__title section__title--strong">Available Trips</h2>
+        <h2 className="section__title section__title--strong">Upcoming Trips</h2>
+        <div style={{margin:'8px 0 16px', textAlign:'right'}}>
+          <a
+            className="btn btn--pink"
+            href={buildWhatsAppLink('Hi, I would like to customize a trip.')}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Customize a trip via WhatsApp"
+          >
+            Customize Trip
+          </a>
+        </div>
         <div className="grid grid--cards">
-          {trending.map(tour => (
-            <TravelCard key={tour.id} tour={tour} />
+          {visibleUpcoming.map(t => (
+            <TravelCard key={t.id} tour={t} />
           ))}
         </div>
+        {upcoming.length > 3 && (
+          <div style={{textAlign:'center', marginTop:16}}>
+            <button className="btn" onClick={()=>setShowAllUpcoming(s => !s)}>
+              {showAllUpcoming ? 'Show Less' : 'Show More'}
+            </button>
+          </div>
+        )}
       </section>
 
       <section className="section">
-  <h2 className="section__title section__title--strong">Upcoming Trips</h2>
-  <div className="grid grid--cards">
-    {upcoming.map(t => (
-      <TravelCard key={t.id} tour={t} />
-    ))}
-  </div>
-</section>
+        <h2 className="section__title section__title--strong">Available Trips</h2>
+        <div className="grid grid--cards">
+          {visibleAvailable.map(tour => (
+            <TravelCard key={tour.id} tour={tour} />
+          ))}
+        </div>
+        {trending.length > 3 && (
+          <div style={{textAlign:'center', marginTop:16}}>
+            <button className="btn" onClick={()=>setShowAllAvailable(s => !s)}>
+              {showAllAvailable ? 'Show Less' : 'Show More'}
+            </button>
+          </div>
+        )}
+      </section>
 
 
       <section className="section section--tight">
