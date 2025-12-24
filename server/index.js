@@ -10,6 +10,7 @@ const voucherRoutes = require('./routes/vouchers')
 const tourRoutes = require('./routes/tours')
 const reviewRoutes = require('./routes/reviews')
 const uploadRoutes = require('./routes/upload')
+const galleryRoutes = require('./routes/gallery')
 
 const app = express()
 app.use(cors())
@@ -24,6 +25,7 @@ app.use('/api/vouchers', voucherRoutes)
 app.use('/api/tours', tourRoutes)
 app.use('/api/reviews', reviewRoutes)
 app.use('/api/upload', uploadRoutes)
+app.use('/api/gallery', galleryRoutes)
 
 const PORT = process.env.PORT || 4000
 

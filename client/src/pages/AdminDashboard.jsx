@@ -47,6 +47,12 @@ export default function AdminDashboard(){
         fetch(`${API}/api/reviews`),
         fetch(`${API}/api/gallery`, { headers: authHeaders() }),
       ])
+      // Handle 401 errors (unauthorized) - token expired or invalid
+      if (vRes.status === 401 || gRes?.status === 401) {
+        localStorage.removeItem('admin_token')
+        nav('/admin/login')
+        return
+      }
       if (bRes.ok) setBlogs(await bRes.json())
       if (vRes.ok) setVouchers(await vRes.json())
       if (tRes.ok) setTours(await tRes.json())
@@ -65,6 +71,11 @@ export default function AdminDashboard(){
     const method = blogForm._id ? 'PUT' : 'POST'
     const url = blogForm._id ? `${API}/api/blogs/${blogForm._id}` : `${API}/api/blogs`
     const res = await fetch(url, { method, headers: { 'Content-Type':'application/json', ...authHeaders() }, body: JSON.stringify(blogForm) })
+    if (res.status === 401) {
+      localStorage.removeItem('admin_token')
+      nav('/admin/login')
+      return
+    }
     if (!res.ok) return setMessage('Failed to save blog')
     setBlogForm({ _id:'', title:'', excerpt:'', thumb:'', date:'', author:'', content:'' })
     await refreshAll()
@@ -74,7 +85,12 @@ export default function AdminDashboard(){
   function editBlog(b){ setBlogForm({ ...b }) }
 
   async function deleteBlog(id){
-    await fetch(`${API}/api/blogs/${id}`, { method:'DELETE', headers: authHeaders() })
+    const res = await fetch(`${API}/api/blogs/${id}`, { method:'DELETE', headers: authHeaders() })
+    if (res.status === 401) {
+      localStorage.removeItem('admin_token')
+      nav('/admin/login')
+      return
+    }
     setMessage('Blog deleted')
     await refreshAll()
   }
@@ -85,6 +101,11 @@ export default function AdminDashboard(){
     const method = voucherForm._id ? 'PUT' : 'POST'
     const url = voucherForm._id ? `${API}/api/vouchers/${voucherForm._id}` : `${API}/api/vouchers`
     const res = await fetch(url, { method, headers: { 'Content-Type':'application/json', ...authHeaders() }, body: JSON.stringify(voucherForm) })
+    if (res.status === 401) {
+      localStorage.removeItem('admin_token')
+      nav('/admin/login')
+      return
+    }
     if (!res.ok) return setMessage('Failed to save voucher')
     setVoucherForm({ _id:'', code:'', discountPercent:10, active:true })
     await refreshAll()
@@ -94,7 +115,12 @@ export default function AdminDashboard(){
   function editVoucher(v){ setVoucherForm({ ...v }) }
 
   async function deleteVoucher(id){
-    await fetch(`${API}/api/vouchers/${id}`, { method:'DELETE', headers: authHeaders() })
+    const res = await fetch(`${API}/api/vouchers/${id}`, { method:'DELETE', headers: authHeaders() })
+    if (res.status === 401) {
+      localStorage.removeItem('admin_token')
+      nav('/admin/login')
+      return
+    }
     setMessage('Voucher deleted')
     await refreshAll()
   }
@@ -109,6 +135,11 @@ export default function AdminDashboard(){
     const method = tourForm._id ? 'PUT' : 'POST'
     const url = tourForm._id ? `${API}/api/tours/${tourForm._id}` : `${API}/api/tours`
     const res = await fetch(url, { method, headers: { 'Content-Type':'application/json', ...authHeaders() }, body: JSON.stringify(tourForm) })
+    if (res.status === 401) {
+      localStorage.removeItem('admin_token')
+      nav('/admin/login')
+      return
+    }
     if (!res.ok) return setMessage('Failed to save tour')
     setTourForm({ _id:'', title:'', img:'', desc:'', price:0, days:1, location:'', trending:false, upcoming:false, photos: [], details: { expenses: '', itinerary: [] } })
     await refreshAll()
@@ -118,7 +149,12 @@ export default function AdminDashboard(){
   function editTour(t){ setTourForm({ ...t }) }
 
   async function deleteTour(id){
-    await fetch(`${API}/api/tours/${id}`, { method:'DELETE', headers: authHeaders() })
+    const res = await fetch(`${API}/api/tours/${id}`, { method:'DELETE', headers: authHeaders() })
+    if (res.status === 401) {
+      localStorage.removeItem('admin_token')
+      nav('/admin/login')
+      return
+    }
     setMessage('Tour deleted')
     await refreshAll()
   }
@@ -127,6 +163,11 @@ export default function AdminDashboard(){
   async function addReview(e){
     e.preventDefault()
     const res = await fetch(`${API}/api/reviews`, { method:'POST', headers: { 'Content-Type':'application/json', ...authHeaders() }, body: JSON.stringify(reviewForm) })
+    if (res.status === 401) {
+      localStorage.removeItem('admin_token')
+      nav('/admin/login')
+      return
+    }
     if (!res.ok) return setMessage('Failed to add review')
     setReviewForm({ author:'', rating:5, message:'', tourId: '' })
     await refreshAll()
@@ -135,13 +176,23 @@ export default function AdminDashboard(){
 
   async function handleToggleApprove(id, approve){
     const res = await fetch(`${API}/api/reviews/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', ...authHeaders() }, body: JSON.stringify({ approved: approve }) })
+    if (res.status === 401) {
+      localStorage.removeItem('admin_token')
+      nav('/admin/login')
+      return
+    }
     if (!res.ok) return setMessage('Failed to update review')
     setMessage(approve ? 'Review approved' : 'Review unapproved')
     await refreshAll()
   }
 
   async function deleteReview(id){
-    await fetch(`${API}/api/reviews/${id}`, { method:'DELETE', headers: authHeaders() })
+    const res = await fetch(`${API}/api/reviews/${id}`, { method:'DELETE', headers: authHeaders() })
+    if (res.status === 401) {
+      localStorage.removeItem('admin_token')
+      nav('/admin/login')
+      return
+    }
     setMessage('Review deleted')
     await refreshAll()
   }
@@ -158,6 +209,11 @@ export default function AdminDashboard(){
     const fd = new FormData()
     fd.append('file', file)
     const res = await fetch(`${API}/api/upload`, { method: 'POST', body: fd, headers: authHeaders() })
+    if (res.status === 401) {
+      localStorage.removeItem('admin_token')
+      nav('/admin/login')
+      return
+    }
     if (!res.ok) return setMessage('Upload failed')
     const data = await res.json()
     setMessage(`Uploaded: ${data.path}`)
@@ -175,6 +231,11 @@ export default function AdminDashboard(){
     if (!window.confirm('Delete this photo?')) return
     try{
       const res = await fetch(`${API}/api/gallery/${id}`, { method: 'DELETE', headers: authHeaders() })
+      if (res.status === 401) {
+        localStorage.removeItem('admin_token')
+        nav('/admin/login')
+        return
+      }
       if (!res.ok) return setMessage('Failed to delete photo')
       setMessage('Photo deleted')
       await refreshAll()

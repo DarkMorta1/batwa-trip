@@ -28,11 +28,11 @@ export default function Contact() {
     { icon: '⏰', label: 'Hours', value: '9AM - 6PM ', href: '#' },
   ]
 
-  const socialLinks = [
-    { name: 'Facebook', icon: '👍', url: 'https://www.facebook.com/share/1BZt5p95gK/', color: 'rgba(59, 89, 152, 0.2)', hoverColor: 'rgba(59, 89, 152, 0.4)' },
-    { name: 'Instagram', icon: '📷', url: 'https://www.instagram.com/batuwatrip', color: 'rgba(217, 48, 128, 0.2)', hoverColor: 'rgba(217, 48, 128, 0.4)' },
-    { name: 'WhatsApp', icon: '💬', url: 'https://wa.me/9779801113350', color: 'rgba(37, 211, 102, 0.2)', hoverColor: 'rgba(37, 211, 102, 0.4)' },
-    { name: 'Call Now', icon: '☎️', url: 'tel:+977980-1113350', color: 'rgba(63, 81, 181, 0.2)', hoverColor: 'rgba(63, 81, 181, 0.4)' },
+   const socialLinks = [
+    { name: 'Facebook', icon: '/images/fb.png', url: 'https://www.facebook.com/share/1BZt5p95gK/', color: 'rgba(59, 89, 152, 0.2)', hoverColor: 'rgba(59, 89, 152, 0.4)'},
+    { name: 'Instagram', icon: '/images/Instagram_icon.png', url: 'https://www.instagram.com/batuwatrip', color: 'rgba(217, 48, 128, 0.2)', hoverColor: 'rgba(217, 48, 128, 0.4)' },
+    { name: 'WhatsApp', icon: '/images/WhatsApp.png', url: 'https://wa.me/9779801113350', color: 'rgba(37, 211, 102, 0.2)', hoverColor: 'rgba(37, 211, 102, 0.4)' },
+    { name: 'Call Now', icon: '/images/phone.png', url: 'tel:+977980-1113350', color: 'rgba(63, 81, 181, 0.2)', hoverColor: 'rgba(63, 81, 181, 0.4)' },
   ]
 
   return (
@@ -120,7 +120,7 @@ export default function Contact() {
         {/* Main Content Grid */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '28px' }}>
           {/* Message Form */}
-          <div>
+          {/* <div>
             <h2 style={{ color: '#fff', fontSize: '22px', fontWeight: '700', marginBottom: '18px' }}>Send Us a Message</h2>
             <form onSubmit={handleSubmit} style={{
               background: '#fff',
@@ -296,7 +296,7 @@ export default function Contact() {
                 </p>
               )}
             </form>
-          </div>
+          </div> */}
 
           {/* Social Media Section */}
           <div>
@@ -342,8 +342,8 @@ export default function Contact() {
                     e.currentTarget.style.transform = 'translateY(0)'
                   }}
                 >
-                  <span style={{ fontSize: '28px' }}>{social.icon}</span>
-                  <span>{social.name}</span>
+                  <img src={social.icon} alt={social.name} style={{ width: '36px', height: '36px', objectFit: 'contain' }} />
+                    <span>{social.name}</span>
                 </a>
               ))}
             </div>

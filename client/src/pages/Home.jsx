@@ -26,6 +26,7 @@ export default function Home() {
   const [reviewMessage, setReviewMessage] = useState('')
   const [showAllUpcoming, setShowAllUpcoming] = useState(false)
   const [showAllAvailable, setShowAllAvailable] = useState(false)
+  const [showAllReviews, setShowAllReviews] = useState(false)
   useEffect(() => {
     // try fetching from backend; fallback to local data if unavailable
     fetch(`${API}/api/tours`).then(r=>r.json()).then(data=>setTours(data.map(d=>({ ...d, id: d.id || d._id })))).catch(()=>{})
@@ -118,60 +119,68 @@ export default function Home() {
           </div>
         </div>
 
-        <div style={{display:'flex',flexDirection:'column',gap:16}}>
-          <div style={{maxWidth:780}}>
-            <button className="btn btn--pink" onClick={()=>setShowReviewForm(s=>!s)}>{showReviewForm ? 'Hide Feedback Form' : 'Send us your valuable feedback'}</button>
-
-            {showReviewForm && (
-              <form onSubmit={async (e)=>{
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:24,alignItems:'start'}}>
+          {/* Feedback form card */}
+          <div style={{background:'#fff',padding:20,borderRadius:12,boxShadow:'0 12px 30px rgba(2,6,23,0.2)'}}>
+            <p style={{margin:0,color:'#666',fontSize:14}}>We'd love to hear from you — tell us what went well and what we can improve.</p>
+            <form onSubmit={async (e)=>{
                 e.preventDefault()
                 setReviewMessage('')
                 try{
                   const res = await fetch(`${API}/api/reviews`, { method: 'POST', headers: { 'Content-Type':'application/json' }, body: JSON.stringify(reviewForm) })
                   if (!res.ok) return setReviewMessage('Failed to submit feedback')
                   setReviewForm({ author:'', rating:5, message:'' })
-                  setReviewMessage('Thanks — your feedback was submitted and will appear after approval.')
+                  setReviewMessage('Thank you for your feedback.')
                 }catch(err){
                   setReviewMessage('Error submitting feedback')
                 }
-              }} style={{display:'grid',gap:8,marginTop:12}}>
-                <input value={reviewForm.author} onChange={e=>setReviewForm({...reviewForm, author:e.target.value})} placeholder="Your name" />
-
-                {/* Star rating */}
-                <div style={{display:'flex',alignItems:'center',gap:8}}>
-                  <div style={{display:'flex',gap:6}}>
-                    {[1,2,3,4,5].map(i=> (
-                      <button type="button" key={i} onClick={()=>setReviewForm(f=>({ ...f, rating: i }))} style={{background:'transparent',border:'none',cursor:'pointer',fontSize:22,color: i <= (reviewForm.rating||0) ? '#ffd166' : '#444'}} aria-label={`${i} star`}>
-                        {i <= (reviewForm.rating||0) ? '★' : '☆'}
-                      </button>
-                    ))}
-                  </div>
-                  <div style={{fontSize:13,color:'#999'}}>{reviewForm.rating} / 5</div>
+              }} style={{display:'grid',gap:12,marginTop:16}}>
+              <input value={reviewForm.author} onChange={e=>setReviewForm({...reviewForm, author:e.target.value})} placeholder="Your name" style={{padding:12,borderRadius:8,border:'1px solid #e6e6e6',fontSize:14}} />
+              <input value={reviewForm.email || ''} onChange={e=>setReviewForm({...reviewForm, email:e.target.value})} placeholder="Email (optional)" style={{padding:12,borderRadius:8,border:'1px solid #e6e6e6',fontSize:14}} />
+              <div style={{display:'flex',alignItems:'center',gap:12}}>
+                <div style={{display:'flex',gap:6}}>
+                  {[1,2,3,4,5].map(i=> (
+                    <button type="button" key={i} onClick={()=>setReviewForm(f=>({ ...f, rating: i }))} style={{background:'transparent',border:'none',cursor:'pointer',fontSize:22,color: i <= (reviewForm.rating||0) ? '#ffd166' : '#cfcfcf'}} aria-label={`${i} star`}>
+                      {i <= (reviewForm.rating||0) ? '★' : '☆'}
+                    </button>
+                  ))}
                 </div>
-
-                <textarea value={reviewForm.message} onChange={e=>setReviewForm({...reviewForm, message:e.target.value})} placeholder="Your feedback" rows={4} />
-                <div style={{display:'flex',gap:8}}>
-                  <button className="btn btn--pink" type="submit">Submit</button>
-                  <button type="button" className="btn" onClick={()=>{ setShowReviewForm(false); setReviewMessage('') }}>Cancel</button>
-                </div>
-                {reviewMessage && <div style={{marginTop:8,color:'#9f9'}}>{reviewMessage}</div>}
-              </form>
-            )}
-          </div>
-
-          <div style={{maxWidth:780}}>
-            <h3 style={{marginTop:0}}>Recent reviews</h3>
-            {reviews.length===0 && <div className="muted">No reviews yet</div>}
-            {reviews.slice(0,5).map(rv=> (
-              <div key={rv._id} style={{background:'#fff',padding:12,borderRadius:8,marginTop:8}}>
-                <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-                  <div style={{fontWeight:700}}>{rv.author}</div>
-                  <div style={{color:'#ffd166'}}>{'★'.repeat(Math.max(0, Math.min(5, Math.round(rv.rating || 0))))}</div>
-                </div>
-                <div style={{fontSize:13,color:'#333',marginTop:6}}>{rv.message}</div>
+                <div style={{fontSize:13,color:'#999'}}>{reviewForm.rating} / 5</div>
               </div>
-            ))}
+              <textarea value={reviewForm.message} onChange={e=>setReviewForm({...reviewForm, message:e.target.value})} placeholder="Tell us about your experience" rows={5} style={{padding:12,borderRadius:8,border:'1px solid #e6e6e6',fontSize:14,resize:'vertical'}} />
+
+              <div style={{display:'flex',gap:12}}>
+                <button className="btn btn--pink" type="submit" style={{flex:1}}>Send Feedback</button>
+                <button type="button" className="btn" onClick={()=>{ setReviewForm({ author:'', rating:5, message:'' }); setReviewMessage('') }}>Reset</button>
+              </div>
+              {reviewMessage && <div style={{marginTop:8,color:'#4caf50',fontWeight:600}}>{reviewMessage}</div>}
+            </form>
           </div>
+
+          {/* Right column: image and recent reviews */}
+          <aside>
+            <div style={{background:'#fff',padding:16,borderRadius:12,boxShadow:'0 8px 18px rgba(2,6,23,0.08)'}}>
+              <h4 style={{margin:'0 0 8px 0'}}>Recent reviews</h4>
+              {reviews.length===0 && <div className="muted">No reviews yet</div>}
+              {(showAllReviews ? reviews : reviews.slice(0,4)).map(rv=> (
+                <div key={rv._id} style={{padding:10,borderRadius:8,background:'#fafafa',marginTop:8}}>
+                  <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                    <div style={{fontWeight:700}}>{rv.author}</div>
+                    <div style={{color:'#ffd166'}}>{'★'.repeat(Math.max(0, Math.min(5, Math.round(rv.rating || 0))))}</div>
+                  </div>
+                  <div style={{fontSize:13,color:'#333',marginTop:8}}>{rv.message}</div>
+                </div>
+              ))}
+
+              {reviews.length > 4 && (
+                <div style={{textAlign:'center', marginTop:12}}>
+                  <button className="btn" onClick={()=>setShowAllReviews(s=>!s)}>
+                    {showAllReviews ? 'Show Less' : 'Show More'}
+                  </button>
+                </div>
+              )}
+            </div>
+          </aside>
         </div>
       </section>
 
