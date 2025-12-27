@@ -74,7 +74,7 @@ export default function Home() {
       .then(data => {
         console.log('Fetched blogs from backend:', data.length, 'blogs')
         if (data.length > 0) {
-          // Sort by createdAt (newest first) and take latest 3
+          // Sort by createdAt (newest first) - show max 4, latest first
           const sortedBlogs = data
             .map(d => ({ ...d, id: d.id || d._id }))
             .sort((a, b) => {
@@ -82,7 +82,7 @@ export default function Home() {
               const dateB = new Date(b.createdAt || b.date || 0)
               return dateB - dateA
             })
-            .slice(0, 3)
+            .slice(0, 4) // Show max 4 blogs, latest first
           setBlogs(sortedBlogs)
         }
       })
@@ -120,23 +120,14 @@ export default function Home() {
   const visibleAvailable = showAllAvailable ? trending : trending.slice(0, 3)
   const nav = useNavigate()
 
-  // Slideshow functions for blogs
-  const latestBlogs = blogs.slice(0, 3)
+  // Blog carousel - show 4 max, latest first, navigate with arrows
+  const latestBlogs = blogs // Already sorted latest first and limited to 4
   const nextBlog = () => {
     setCurrentBlogIndex((prev) => (prev + 1) % latestBlogs.length)
   }
   const prevBlog = () => {
     setCurrentBlogIndex((prev) => (prev - 1 + latestBlogs.length) % latestBlogs.length)
   }
-
-  // Auto-advance slideshow
-  useEffect(() => {
-    if (latestBlogs.length <= 1) return
-    const interval = setInterval(() => {
-      setCurrentBlogIndex((prev) => (prev + 1) % latestBlogs.length)
-    }, 5000) // Change slide every 5 seconds
-    return () => clearInterval(interval)
-  }, [latestBlogs.length])
   
   return (
     <div className="home-page">
@@ -221,159 +212,109 @@ export default function Home() {
             <p>No blogs available yet. Check back soon!</p>
           </div>
         ) : (
-          <div style={{ position: 'relative', width: '100%', overflow: 'hidden' }}>
-            {/* Slideshow Container */}
-            <div 
-              style={{ 
-                display: 'flex', 
-                transition: 'transform 0.5s ease-in-out',
-                transform: `translateX(-${currentBlogIndex * 100}%)`,
-                width: `${latestBlogs.length * 100}%`
-              }}
-            >
-              {latestBlogs.map((b, index) => (
-                <div
-                  key={b.id}
-                  style={{ 
-                    minWidth: `${100 / latestBlogs.length}%`,
-                    width: `${100 / latestBlogs.length}%`,
-                    flexShrink: 0,
-                    padding: '0 8px'
+          <div style={{ position: 'relative', width: '100%', maxWidth: '600px', margin: '0 auto' }}>
+            {/* Simple Blog Card Carousel - Show one card at a time */}
+            <div style={{ position: 'relative', width: '100%' }}>
+              <article 
+                key={latestBlogs[currentBlogIndex]?.id}
+                className="mini-blog" 
+                onClick={() => nav(`/blog/${latestBlogs[currentBlogIndex]?.id}`)}
+                style={{ 
+                  cursor: 'pointer',
+                  background: '#fff',
+                  borderRadius: '12px',
+                  overflow: 'hidden',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                  transition: 'opacity 0.3s ease-in-out'
+                }}
+              >
+                <img 
+                  src={latestBlogs[currentBlogIndex]?.thumb?.startsWith('http') ? latestBlogs[currentBlogIndex]?.thumb : (latestBlogs[currentBlogIndex]?.thumb?.startsWith('/') ? latestBlogs[currentBlogIndex]?.thumb : `/images/${latestBlogs[currentBlogIndex]?.thumb || 'placeholder.jpg'}`)} 
+                  alt={latestBlogs[currentBlogIndex]?.title}
+                  style={{ width: '100%', height: '200px', objectFit: 'cover' }}
+                  onError={(e) => {
+                    e.target.src = '/images/placeholder.jpg'
                   }}
-                >
-                  <article 
-                    className="mini-blog" 
-                    onClick={() => nav(`/blog/${b.id}`)}
-                    style={{ 
-                      cursor: 'pointer',
-                      background: '#fff',
-                      borderRadius: '12px',
-                      overflow: 'hidden',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                      height: '100%'
+                />
+                <div style={{ padding: '16px' }}>
+                  <h3 style={{margin: '8px 0 4px', fontSize: 15, fontWeight: 'bold'}}>{latestBlogs[currentBlogIndex]?.title}</h3>
+                  <p className="muted" style={{fontSize:13, margin:0, lineHeight: '1.4'}}>{latestBlogs[currentBlogIndex]?.excerpt}</p>
+                  <p className="meta" style={{marginTop:8, fontSize: '12px', color: '#999'}}>{latestBlogs[currentBlogIndex]?.date} • {latestBlogs[currentBlogIndex]?.author}</p>
+                </div>
+              </article>
+
+              {/* Navigation Buttons */}
+              {latestBlogs.length > 1 && (
+                <>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      prevBlog()
                     }}
+                    style={{
+                      position: 'absolute',
+                      left: '10px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      background: 'rgba(0, 0, 0, 0.6)',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '50%',
+                      width: '44px',
+                      height: '44px',
+                      minWidth: '44px',
+                      minHeight: '44px',
+                      fontSize: '20px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      zIndex: 10,
+                      transition: 'background 0.2s',
+                      touchAction: 'manipulation'
+                    }}
+                    onMouseEnter={(e) => e.target.style.background = 'rgba(0, 0, 0, 0.8)'}
+                    onMouseLeave={(e) => e.target.style.background = 'rgba(0, 0, 0, 0.6)'}
+                    aria-label="Previous blog"
                   >
-                    <img 
-                      src={b.thumb?.startsWith('http') ? b.thumb : (b.thumb?.startsWith('/') ? b.thumb : `/images/${b.thumb || 'placeholder.jpg'}`)} 
-                      alt={b.title}
-                      style={{ width: '100%', height: '200px', objectFit: 'cover' }}
-                      onError={(e) => {
-                        e.target.src = '/images/placeholder.jpg'
-                      }}
-                    />
-                    <div style={{ padding: '16px' }}>
-                      <h3 style={{margin: '8px 0 4px', fontSize: 15, fontWeight: 'bold'}}>{b.title}</h3>
-                      <p className="muted" style={{fontSize:13, margin:0, lineHeight: '1.4'}}>{b.excerpt}</p>
-                      <p className="meta" style={{marginTop:8, fontSize: '12px', color: '#999'}}>{b.date} • {b.author}</p>
-                    </div>
-                  </article>
-                </div>
-              ))}
+                    ‹
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      nextBlog()
+                    }}
+                    style={{
+                      position: 'absolute',
+                      right: '10px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      background: 'rgba(0, 0, 0, 0.6)',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '50%',
+                      width: '44px',
+                      height: '44px',
+                      minWidth: '44px',
+                      minHeight: '44px',
+                      fontSize: '20px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      zIndex: 10,
+                      transition: 'background 0.2s',
+                      touchAction: 'manipulation'
+                    }}
+                    onMouseEnter={(e) => e.target.style.background = 'rgba(0, 0, 0, 0.8)'}
+                    onMouseLeave={(e) => e.target.style.background = 'rgba(0, 0, 0, 0.6)'}
+                    aria-label="Next blog"
+                  >
+                    ›
+                  </button>
+                </>
+              )}
             </div>
-
-            {/* Navigation Buttons */}
-            {latestBlogs.length > 1 && (
-              <>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    prevBlog()
-                  }}
-                  style={{
-                    position: 'absolute',
-                    left: '10px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    background: 'rgba(0, 0, 0, 0.6)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '50%',
-                    width: '44px',
-                    height: '44px',
-                    minWidth: '44px',
-                    minHeight: '44px',
-                    fontSize: '20px',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    zIndex: 10,
-                    transition: 'background 0.2s',
-                    touchAction: 'manipulation'
-                  }}
-                  onMouseEnter={(e) => e.target.style.background = 'rgba(0, 0, 0, 0.8)'}
-                  onMouseLeave={(e) => e.target.style.background = 'rgba(0, 0, 0, 0.6)'}
-                  aria-label="Previous blog"
-                >
-                  ‹
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    nextBlog()
-                  }}
-                  style={{
-                    position: 'absolute',
-                    right: '10px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    background: 'rgba(0, 0, 0, 0.6)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '50%',
-                    width: '44px',
-                    height: '44px',
-                    minWidth: '44px',
-                    minHeight: '44px',
-                    fontSize: '20px',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    zIndex: 10,
-                    transition: 'background 0.2s',
-                    touchAction: 'manipulation'
-                  }}
-                  onMouseEnter={(e) => e.target.style.background = 'rgba(0, 0, 0, 0.8)'}
-                  onMouseLeave={(e) => e.target.style.background = 'rgba(0, 0, 0, 0.6)'}
-                  aria-label="Next blog"
-                >
-                  ›
-                </button>
-
-                {/* Dots Indicator */}
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  marginTop: '16px',
-                  position: 'relative',
-                  zIndex: 5
-                }}>
-                  {latestBlogs.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        setCurrentBlogIndex(index)
-                      }}
-                      style={{
-                        width: currentBlogIndex === index ? '24px' : '8px',
-                        height: '8px',
-                        borderRadius: '4px',
-                        border: 'none',
-                        background: currentBlogIndex === index ? '#ff5a5f' : 'rgba(255, 255, 255, 0.5)',
-                        cursor: 'pointer',
-                        transition: 'all 0.3s',
-                        padding: 0,
-                        touchAction: 'manipulation'
-                      }}
-                      aria-label={`Go to blog ${index + 1}`}
-                    />
-                  ))}
-                </div>
-              </>
-            )}
           </div>
         )}
       </section> 

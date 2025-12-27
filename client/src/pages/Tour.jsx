@@ -8,9 +8,6 @@ export default function Tour(){
   const { id } = useParams()
   const nav = useNavigate()
   const [tour, setTour] = useState(null)
-  const [voucherCode, setVoucherCode] = useState('')
-  const [voucherMessage, setVoucherMessage] = useState('')
-  const [priceHidden, setPriceHidden] = useState(false)
 
   useEffect(()=>{
     // Fetch all tours (including published) to find the specific one
@@ -36,19 +33,6 @@ export default function Tour(){
       })
   }, [id])
 
-  async function applyVoucher(){
-    setVoucherMessage('')
-    if(!voucherCode) return setVoucherMessage('Enter voucher code')
-    try{
-      const res = await fetch(`${API}/api/vouchers/validate`, { method: 'POST', headers: { 'Content-Type':'application/json' }, body: JSON.stringify({ code: voucherCode }) })
-      const data = await res.json()
-      if (!res.ok) return setVoucherMessage(data.message || 'Invalid voucher')
-      setPriceHidden(true)
-      setVoucherMessage(`Voucher applied: ${data.discountPercent || 0}% off`)
-    }catch(err){
-      setVoucherMessage('Error validating voucher')
-    }
-  }
 
   const scrollToContact = () => {
     if (window.location.pathname !== '/'){
@@ -185,19 +169,13 @@ export default function Tour(){
         <aside className="right">
           <div className="box">
             <h3>Price</h3>
-            {tour.showPrice !== false && !priceHidden ? (
+            {tour.showPrice !== false ? (
               <div className="price big">${tour.price}</div>
             ) : (
               <div style={{fontSize:16,fontWeight:700,color:'#2ecc71'}}>
-                {priceHidden ? 'Price hidden — voucher applied' : 'Price hidden'}
+                Price hidden
               </div>
             )}
-
-            <div style={{marginTop:12,display:'flex',gap:8,alignItems:'center'}}>
-              <input value={voucherCode} onChange={e=>setVoucherCode(e.target.value)} placeholder="Voucher code" style={{padding:8,borderRadius:8,border:'1px solid #e6e6e6'}} />
-              <button className="btn" onClick={applyVoucher}>Apply</button>
-            </div>
-            {voucherMessage && <div style={{marginTop:8,color:'#ffd700',fontWeight:700}}>{voucherMessage}</div>}
 
             <p className="muted" style={{marginTop:12}}>{tour.details?.expenses}</p>
 
