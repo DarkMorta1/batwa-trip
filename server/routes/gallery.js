@@ -3,10 +3,15 @@ const router = express.Router()
 const Gallery = require('../models/Gallery')
 const { requireAdmin } = require('./middleware')
 
-// List gallery items (admin only)
-router.get('/', requireAdmin, async (req, res) => {
-  const items = await Gallery.find().sort({ createdAt: -1 })
-  res.json(items)
+// List gallery items (public)
+router.get('/', async (req, res) => {
+  try {
+    const items = await Gallery.find().sort({ createdAt: -1 })
+    res.json(items)
+  } catch (error) {
+    console.error('Get gallery error:', error)
+    res.status(500).json({ message: 'Error fetching gallery', error: error.message })
+  }
 })
 
 // Delete gallery item (admin only)

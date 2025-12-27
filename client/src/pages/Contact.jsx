@@ -65,12 +65,12 @@ export default function Contact() {
       </div>
 
       {/* Header Section */}
-      <div style={{ padding: '0 28px 28px', maxWidth: '1120px', margin: '0 auto' }}>
+      <div style={{ padding: '0 16px 28px', maxWidth: '1120px', margin: '0 auto' }}>
         <div style={{ marginBottom: '32px' }}>
           <span style={{ color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', fontWeight: '600', fontSize: '12px', letterSpacing: '0.5px' }}>
             Stay Connected
           </span>
-          <h1 style={{ color: '#fff', margin: '4px 0 12px 0', fontSize: '28px', fontWeight: '700' }}>
+          <h1 style={{ color: '#fff', margin: '4px 0 12px 0', fontSize: 'clamp(22px, 5vw, 28px)', fontWeight: '700', lineHeight: '1.2' }}>
             <span style={{ color: '#e91e63' }}>Contact</span> Us
           </h1>
           <p style={{ color: 'rgba(255,255,255,0.75)', margin: 0, fontSize: '15px', lineHeight: '1.6' }}>
@@ -79,7 +79,7 @@ export default function Contact() {
         </div>
 
         {/* Contact Methods Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '32px' }}>
+        <div className="contact-methods-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '32px' }}>
           {contactMethods.map((method, idx) => (
             <a key={idx} href={method.href} 
               style={{
@@ -301,7 +301,7 @@ export default function Contact() {
           {/* Social Media Section */}
           <div>
             <h2 style={{ color: '#fff', fontSize: '22px', fontWeight: '700', marginBottom: '18px' }}>Connect With Us</h2>
-            <div style={{
+            <div className="social-links-grid" style={{
               background: '#fff',
               borderRadius: '12px',
               padding: '24px',

@@ -28,14 +28,84 @@ export default function Home() {
   const [showAllAvailable, setShowAllAvailable] = useState(false)
   const [showAllReviews, setShowAllReviews] = useState(false)
   useEffect(() => {
-    // try fetching from backend; fallback to local data if unavailable
-    fetch(`${API}/api/tours`).then(r=>r.json()).then(data=>setTours(data.map(d=>({ ...d, id: d.id || d._id })))).catch(()=>{})
-    fetch(`${API}/api/blogs`).then(r=>r.json()).then(data=>setBlogs(data.map(d=>({ ...d, id: d.id || d._id })))).catch(()=>{})
-    fetch(`${API}/api/reviews?approved=true`).then(r=>r.json()).then(data=>setReviews(data)).catch(()=>{})
+    // Fetch published tours only - backend filters this automatically for public routes
+    fetch(`${API}/api/tours`)
+      .then(r => {
+        if (!r.ok) {
+          console.error('Failed to fetch tours:', r.status, r.statusText)
+          throw new Error(`Failed to fetch tours: ${r.status}`)
+        }
+        return r.json()
+      })
+      .then(data => {
+        console.log('Fetched tours from backend:', data.length, 'tours')
+        // Backend already filters to published, but double-check for safety
+        const publishedTours = data.filter(t => t.status === 'published')
+        console.log('Published tours:', publishedTours.length)
+        
+        if (publishedTours.length > 0) {
+          setTours(publishedTours.map(d => ({ ...d, id: d.id || d._id })))
+        } else {
+          console.warn('⚠️ No published tours found!')
+          console.warn('   The backend returned', data.length, 'tours, but none are published.')
+          console.warn('   Solution: Go to /admin/tours and set tour status to "Published"')
+          // Keep local data as fallback if no published tours
+          if (data.length === 0) {
+            console.warn('   No tours in database at all. Using local fallback data.')
+          }
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching tours:', error)
+        // Keep local data as fallback
+        console.warn('Using local tour data as fallback')
+      })
+    
+    // Fetch all blogs
+    fetch(`${API}/api/blogs`)
+      .then(r => {
+        if (!r.ok) {
+          console.error('Failed to fetch blogs:', r.status)
+          throw new Error(`Failed to fetch blogs: ${r.status}`)
+        }
+        return r.json()
+      })
+      .then(data => {
+        console.log('Fetched blogs from backend:', data.length, 'blogs')
+        if (data.length > 0) {
+          setBlogs(data.map(d => ({ ...d, id: d.id || d._id })))
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching blogs:', error)
+        console.warn('Using local blog data as fallback')
+      })
+    
+    // Fetch approved reviews only - backend filters this automatically for public routes
+    fetch(`${API}/api/reviews?approved=true`)
+      .then(r => {
+        if (!r.ok) {
+          console.error('Failed to fetch reviews:', r.status)
+          throw new Error(`Failed to fetch reviews: ${r.status}`)
+        }
+        return r.json()
+      })
+      .then(data => {
+        console.log('Fetched reviews from backend:', data.length, 'reviews')
+        // Backend already filters to approved and not hidden, but double-check
+        const visibleReviews = data.filter(r => r.approved && !r.hidden)
+        console.log('Visible reviews:', visibleReviews.length)
+        setReviews(visibleReviews)
+      })
+      .catch((error) => {
+        console.error('Error fetching reviews:', error)
+        console.warn('Reviews could not be loaded')
+      })
   }, [])
 
-  const trending = tours.filter(t => t.trending)
-  const upcoming = tours.filter(t=>t.upcoming)
+  // Filter only published tours with flags
+  const trending = tours.filter(t => t.trending && t.status === 'published')
+  const upcoming = tours.filter(t => t.upcoming && t.status === 'published')
   const visibleUpcoming = showAllUpcoming ? upcoming : upcoming.slice(0, 3)
   const visibleAvailable = showAllAvailable ? trending : trending.slice(0, 3)
   const nav = useNavigate()
@@ -57,11 +127,20 @@ export default function Home() {
             Customize Trip
           </a>
         </div>
-        <div className="grid grid--cards">
-          {visibleUpcoming.map(t => (
-            <TravelCard key={t.id} tour={t} />
-          ))}
-        </div>
+        {visibleUpcoming.length === 0 ? (
+          <div style={{ padding: '40px', textAlign: 'center', color: 'rgba(255,255,255,0.7)' }}>
+            <p>No upcoming trips available. Check back soon!</p>
+            <p style={{ fontSize: '14px', marginTop: '8px' }}>
+              Admin: Make sure tours are set to "Published" status and "Upcoming" flag in the admin panel.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid--cards">
+            {visibleUpcoming.map(t => (
+              <TravelCard key={t.id} tour={t} />
+            ))}
+          </div>
+        )}
         {upcoming.length > 3 && (
           <div style={{textAlign:'center', marginTop:16}}>
             <button className="btn" onClick={()=>setShowAllUpcoming(s => !s)}>
@@ -73,14 +152,23 @@ export default function Home() {
 
       <section className="section">
         <h2 className="section__title section__title--strong">Available Trips</h2>
-        <div className="grid grid--cards">
-          {visibleAvailable.map(tour => (
-            <TravelCard key={tour.id} tour={tour} />
-          ))}
-        </div>
+        {visibleAvailable.length === 0 ? (
+          <div style={{ padding: '40px', textAlign: 'center', color: 'rgba(255,255,255,0.7)' }}>
+            <p>No available trips at the moment. Check back soon!</p>
+            <p style={{ fontSize: '14px', marginTop: '8px' }}>
+              Admin: Make sure tours are set to "Published" status and "Trending" flag in the admin panel.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid--cards">
+            {visibleAvailable.map(tour => (
+              <TravelCard key={tour.id} tour={tour} />
+            ))}
+          </div>
+        )}
         {trending.length > 3 && (
           <div style={{textAlign:'center', marginTop:16}}>
-            <button className="btn" onClick={()=>setShowAllAvailable(s => !s)}>
+            <button className="btn" onClick={()=>setShowAllAvailable(s => !s)} style={{minHeight:'44px',padding:'12px 20px'}}>
               {showAllAvailable ? 'Show Less' : 'Show More'}
             </button>
           </div>
@@ -119,7 +207,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:24,alignItems:'start'}}>
+        <div className="review-section-grid" style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:24,alignItems:'start'}}>
           {/* Feedback form card */}
           <div style={{background:'#fff',padding:20,borderRadius:12,boxShadow:'0 12px 30px rgba(2,6,23,0.2)'}}>
             <p style={{margin:0,color:'#666',fontSize:14}}>We'd love to hear from you — tell us what went well and what we can improve.</p>
@@ -147,11 +235,11 @@ export default function Home() {
                 </div>
                 <div style={{fontSize:13,color:'#999'}}>{reviewForm.rating} / 5</div>
               </div>
-              <textarea value={reviewForm.message} onChange={e=>setReviewForm({...reviewForm, message:e.target.value})} placeholder="Tell us about your experience" rows={5} style={{padding:12,borderRadius:8,border:'1px solid #e6e6e6',fontSize:14,resize:'vertical'}} />
+              <textarea value={reviewForm.message} onChange={e=>setReviewForm({...reviewForm, message:e.target.value})} placeholder="Tell us about your experience" rows={5} style={{padding:12,borderRadius:8,border:'1px solid #e6e6e6',fontSize:16,resize:'vertical',minHeight:'120px'}} />
 
               <div style={{display:'flex',gap:12}}>
-                <button className="btn btn--pink" type="submit" style={{flex:1}}>Send Feedback</button>
-                <button type="button" className="btn" onClick={()=>{ setReviewForm({ author:'', rating:5, message:'' }); setReviewMessage('') }}>Reset</button>
+                  <button className="btn btn--pink" type="submit" style={{flex:1,minHeight:'44px',padding:'12px 20px'}}>Send Feedback</button>
+                <button type="button" className="btn" onClick={()=>{ setReviewForm({ author:'', rating:5, message:'' }); setReviewMessage('') }} style={{minHeight:'44px',padding:'12px 20px'}}>Reset</button>
               </div>
               {reviewMessage && <div style={{marginTop:8,color:'#4caf50',fontWeight:600}}>{reviewMessage}</div>}
             </form>

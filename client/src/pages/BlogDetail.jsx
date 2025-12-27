@@ -21,20 +21,24 @@ export default function BlogDetail(){
   if(blog === null) return <div style={{padding:40, color:'#fff'}}>Blog not found</div>
 
   return (
-    <div style={{padding:'28px'}}>
+    <div style={{padding:'16px'}}>
       <button className="back" onClick={() => nav('/blogs')} style={{
         background: '#3f51b5',
         border: 'none',
         borderRadius: '50%',
-        width: '40px',
-        height: '40px',
+        width: '44px',
+        height: '44px',
+        minWidth: '44px',
+        minHeight: '44px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         fontSize: '20px',
         cursor: 'pointer',
         color: '#fff',
-        transition: 'all 200ms'
+        transition: 'all 200ms',
+        touchAction: 'manipulation',
+        marginBottom: '16px'
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.background = '#2d3a8c'

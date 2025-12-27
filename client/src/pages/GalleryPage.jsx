@@ -15,20 +15,24 @@ export default function GalleryPage(){
   }, [])
   
   return (
-    <div style={{padding:'28px'}}>
+    <div style={{padding:'16px'}}>
       <button className="back" onClick={() => nav('/')} style={{
         background: '#3f51b5',
         border: 'none',
         borderRadius: '50%',
-        width: '40px',
-        height: '40px',
+        width: '44px',
+        height: '44px',
+        minWidth: '44px',
+        minHeight: '44px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         fontSize: '20px',
         cursor: 'pointer',
         color: '#fff',
-        transition: 'all 200ms'
+        transition: 'all 200ms',
+        touchAction: 'manipulation',
+        marginBottom: '12px'
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.background = '#2d3a8c'
@@ -39,8 +43,8 @@ export default function GalleryPage(){
         e.currentTarget.style.transform = 'scale(1)'
       }}
       >←</button>
-      <h1 style={{color:'#fff', marginBottom:'12px'}}>Memories from Our Tours</h1>
-      <p style={{color:'rgba(255,255,255,0.85)', marginBottom:'24px'}}>Gallery of beautiful moments captured by our travelers</p>
+      <h1 style={{color:'#fff', marginBottom:'12px', fontSize: 'clamp(20px, 5vw, 28px)'}}>Memories from Our Tours</h1>
+      <p style={{color:'rgba(255,255,255,0.85)', marginBottom:'24px', fontSize: 'clamp(13px, 3vw, 15px)'}}>Gallery of beautiful moments captured by our travelers</p>
       <Gallery photos={photos} />
     </div>
   )

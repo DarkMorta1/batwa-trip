@@ -8,7 +8,15 @@ export default function Blogs(){
   const [blogs, setBlogs] = useState([])
 
   useEffect(()=>{
-    fetch(`${API}/api/blogs`).then(r=>r.json()).then(data=>setBlogs(data.map(d=>({ ...d, id: d.id || d._id })))).catch(()=>{})
+    fetch(`${API}/api/blogs`)
+      .then(r => {
+        if (r.ok) return r.json()
+        throw new Error('Failed to fetch blogs')
+      })
+      .then(data => setBlogs(data.map(d => ({ ...d, id: d.id || d._id }))))
+      .catch(() => {
+        console.warn('Failed to load blogs from backend')
+      })
   }, [])
 
   return (

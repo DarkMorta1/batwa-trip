@@ -374,18 +374,6 @@ img { display: block; width: 100%; height: auto; border-radius: var(--radius); }
 .price.big{font-size:28px;color:var(--blue);font-weight:800;margin:8px 0}
 .muted{color:var(--muted)}
 
-/* Responsive adjustments */
-@media (min-width: 640px) {
-  .hero__title { font-size: 30px; }
-  .trend-card__media img { height: 190px; }
-  .grid--cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-@media (min-width: 960px) {
-  body.page { padding-bottom: 100px; }
-  .content { padding: 0 22px; }
-  .grid--cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .grid--photos { grid-template-columns: repeat(3, 1fr); }
-}
 /* Gallery grid & overlay */
 .gallery-grid {
   display: grid;
@@ -550,11 +538,490 @@ img { display: block; width: 100%; height: auto; border-radius: var(--radius); }
   box-shadow: 0 8px 25px rgba(0,0,0,0.15);
 }
 
-/* Responsive: stack on smaller screens */
-@media (min-width: 768px) {
+/* ============================================
+   MOBILE-FIRST RESPONSIVE DESIGN (320px-768px)
+   ============================================ */
+
+/* Base mobile styles (320px+) */
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Touch-friendly buttons - minimum 44x44px for mobile */
+.btn,
+button:not(.pager__btn):not(.lightbox-nav button):not(.lightbox-close),
+input[type="button"],
+input[type="submit"],
+.nav-btn {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 12px 16px;
+  font-size: 16px;
+  touch-action: manipulation;
+}
+
+/* Prevent text size adjustment on iOS */
+input,
+select,
+textarea,
+button {
+  font-size: 16px;
+}
+
+/* Mobile-first: Stack all layouts */
+.tour-content {
+  flex-direction: column;
+  padding: 16px;
+  gap: 20px;
+}
+
+.tour-content .left {
+  flex: 1;
+  width: 100%;
+}
+
+.tour-content .right {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Mobile logo */
+.logo {
+  width: 150px;
+  max-width: 80%;
+  height: auto;
+}
+
+/* Mobile hero adjustments */
+.hero__image {
+  min-height: 300px;
+}
+
+.hero__overlay {
+  padding: 24px 16px 16px;
+}
+
+.hero__title {
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+.hero__eyebrow {
+  font-size: 11px;
+}
+
+/* Mobile sections */
+.section {
+  margin: 20px 0;
+}
+
+.section__title {
+  font-size: 20px;
+  line-height: 1.3;
+}
+
+.section__heading {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+/* Mobile cards - single column */
+.grid--cards {
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.trend-card__media img {
+  height: 180px;
+}
+
+.trend-card__body {
+  padding: 12px;
+}
+
+.trend-card__title {
+  font-size: 16px;
+}
+
+.trend-card__meta {
+  font-size: 13px;
+}
+
+/* Mobile buttons in cards - stack vertically */
+.trend-card__actions {
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.trend-card__actions .btn {
+  width: 100%;
+  text-align: center;
+}
+
+/* Mobile blog cards */
+.blog-list {
+  grid-template-columns: 1fr;
+  gap: 16px;
+  padding: 4px;
+}
+
+.mini-blog {
+  min-width: 100%;
+}
+
+/* Mobile gallery */
+.gallery-grid {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  padding: 4px;
+}
+
+.gallery-item {
+  height: 180px;
+}
+
+/* Mobile contact form */
+.contact-form {
+  padding: 16px;
+}
+
+.contact-form input,
+.contact-form textarea {
+  min-height: 44px;
+  padding: 12px;
+  font-size: 16px;
+}
+
+/* Mobile bottom nav */
+.bottom-nav {
+  width: calc(100% - 24px);
+  padding: 8px;
+  gap: 4px;
+  bottom: 8px;
+}
+
+.nav-btn {
+  padding: 6px 4px;
+  min-height: 48px;
+}
+
+.nav-label {
+  font-size: 11px;
+}
+
+.icon {
+  font-size: 20px;
+}
+
+/* Mobile WhatsApp button */
+.whatsapp-btn {
+  width: 56px;
+  height: 56px;
+  right: 16px;
+  bottom: 72px;
+}
+
+/* Mobile tour page */
+.tour-hero {
+  height: 35vh;
+  min-height: 250px;
+}
+
+.tour-content {
+  padding: 16px;
+}
+
+.box {
+  padding: 16px;
+  margin-top: 20px;
+}
+
+.price.big {
+  font-size: 24px;
+}
+
+/* Mobile blog detail */
+.blog-detail {
+  padding: 20px 16px;
+}
+
+.blog-detail h1 {
+  font-size: 24px;
+  line-height: 1.3;
+}
+
+/* Mobile itinerary */
+.itinerary-day {
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.itinerary-day-content {
+  flex-wrap: wrap;
+}
+
+.itinerary-day-number {
+  min-width: 50px !important;
+  width: 50px !important;
+  height: 50px !important;
+  font-size: 16px !important;
+}
+
+.itinerary-day h4 {
+  font-size: 18px;
+}
+
+/* Mobile review section */
+.review-section-grid {
+  grid-template-columns: 1fr !important;
+  gap: 20px !important;
+}
+
+/* Fix overflow issues */
+body {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+.page {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.content {
+  width: 100%;
+  max-width: 100%;
+  padding: 0 16px;
+  overflow-x: hidden;
+}
+
+/* Horizontal scroll containers */
+.cards--scroll {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.cards--scroll::-webkit-scrollbar {
+  height: 4px;
+}
+
+/* Touch-friendly form inputs */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="number"],
+input[type="date"],
+textarea,
+select {
+  min-height: 44px;
+  padding: 12px;
+  font-size: 16px;
+  width: 100%;
+  border-radius: 8px;
+}
+
+textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* Mobile lightbox adjustments */
+@media (max-width: 768px) {
+  .lightbox-content img {
+    max-width: 90%;
+    max-height: 70vh;
+  }
+
+  .lightbox-nav {
+    padding: 0 10px;
+  }
+
+  .lightbox-nav button {
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+  }
+}
+
+/* Tablet adjustments (481px - 768px) */
+@media (min-width: 481px) {
+  .logo {
+    width: 180px;
+  }
+
+  .hero__title {
+    font-size: 24px;
+  }
+
+  .hero__image {
+    min-height: 350px;
+  }
+
+  .section__title {
+    font-size: 22px;
+  }
+
+  .gallery-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .blog-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .trend-card__actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .trend-card__actions .btn {
+    width: auto;
+    flex: 1;
+    min-width: 120px;
+  }
+}
+
+/* Desktop adjustments (769px+) */
+@media (min-width: 769px) {
+  body {
+    padding-bottom: 100px;
+  }
+
+  .content {
+    padding: 0 22px;
+    max-width: 1120px;
+  }
+
+  .logo {
+    width: 200px;
+  }
+
+  .hero__title {
+    font-size: 30px;
+  }
+
+  .hero__image {
+    min-height: 400px;
+  }
+
+  .section__title {
+    font-size: 22px;
+  }
+
+  .section__heading {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .grid--cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .trend-card__media img {
+    height: 190px;
+  }
+
+  .tour-content {
+    flex-direction: row;
+    padding: 28px;
+    gap: 24px;
+  }
+
+  .tour-content .right {
+    width: 320px;
+    max-width: 320px;
+  }
+
   .blog-detail-body {
     flex-direction: row;
     align-items: flex-start;
   }
+
+  .blog-list {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+
+  .gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+
+  .trend-card__actions {
+    flex-direction: row;
+  }
+
+  .trend-card__actions .btn {
+    width: auto;
+  }
+}
+
+/* Large desktop (960px+) */
+@media (min-width: 960px) {
+  .grid--cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .grid--photos {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .itinerary-day-number {
+    min-width: 60px !important;
+    width: 60px !important;
+    height: 60px !important;
+    font-size: 18px !important;
+  }
+
+  .review-section-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 24px !important;
+  }
+}
+
+/* Fix for very small screens (320px - 360px) */
+@media (max-width: 360px) {
+  .hero__title {
+    font-size: 18px;
+  }
+
+  .section__title {
+    font-size: 18px;
+  }
+
+  .trend-card__title {
+    font-size: 15px;
+  }
+
+  .btn {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  .bottom-nav {
+    width: calc(100% - 16px);
+    padding: 6px;
+  }
+
+  .nav-label {
+    font-size: 10px;
+  }
+
+  .icon {
+    font-size: 18px;
+  }
+}
+
+/* Prevent horizontal scroll */
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
 }
 

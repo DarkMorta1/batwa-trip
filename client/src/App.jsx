@@ -7,8 +7,18 @@ import Blogs from './pages/Blogs'
 import BlogDetail from './pages/BlogDetail'
 import Contact from './pages/Contact'
 import AdminLogin from './pages/AdminLogin'
-import AdminDashboard from './pages/AdminDashboard'
+import ToursPage from './pages/admin/ToursPage'
+import ReviewsPage from './pages/admin/ReviewsPage'
+import VouchersPage from './pages/admin/VouchersPage'
+import BannerSettingsPage from './pages/admin/BannerSettingsPage'
+import ContentManagementPage from './pages/admin/ContentManagementPage'
+import MediaLibraryPage from './pages/admin/MediaLibraryPage'
+import SEOSettingsPage from './pages/admin/SEOSettingsPage'
+import ThemeSettingsPage from './pages/admin/ThemeSettingsPage'
+import SettingsPage from './pages/admin/SettingsPage'
+import ActivityLogsPage from './pages/admin/ActivityLogsPage'
 import WhatsAppButton from './components/WhatsAppButton'
+import AdminRoute from './components/AdminRoute'
 
 const navItems = [
   { path: '/', label: 'Home', icon: '🏠' },
@@ -45,6 +55,30 @@ function BottomNav() {
 }
 
 export default function App() {
+  const location = useLocation()
+  const isAdminRoute = location.pathname.startsWith('/admin')
+
+  // Admin routes don't show public header/nav
+  if (isAdminRoute) {
+    return (
+      <Routes>
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin" element={<AdminRoute><ToursPage /></AdminRoute>} />
+        <Route path="/admin/tours" element={<AdminRoute><ToursPage /></AdminRoute>} />
+        <Route path="/admin/reviews" element={<AdminRoute><ReviewsPage /></AdminRoute>} />
+        <Route path="/admin/vouchers" element={<AdminRoute><VouchersPage /></AdminRoute>} />
+        <Route path="/admin/banner" element={<AdminRoute><BannerSettingsPage /></AdminRoute>} />
+        <Route path="/admin/content" element={<AdminRoute><ContentManagementPage /></AdminRoute>} />
+        <Route path="/admin/media" element={<AdminRoute><MediaLibraryPage /></AdminRoute>} />
+        <Route path="/admin/seo" element={<AdminRoute><SEOSettingsPage /></AdminRoute>} />
+        <Route path="/admin/theme" element={<AdminRoute><ThemeSettingsPage /></AdminRoute>} />
+        <Route path="/admin/settings" element={<AdminRoute><SettingsPage /></AdminRoute>} />
+        <Route path="/admin/activity" element={<AdminRoute><ActivityLogsPage /></AdminRoute>} />
+      </Routes>
+    )
+  }
+
+  // Public routes
   return (
     <div className="page">
       <header className="logo-bar">
@@ -58,14 +92,12 @@ export default function App() {
           <Route path="/gallery" element={<GalleryPage />} />
           <Route path="/blogs" element={<Blogs />} />
           <Route path="/blog/:id" element={<BlogDetail />} />
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/contact" element={<Contact />} />
         </Routes>
       </main>
 
-        <BottomNav />
-        <WhatsAppButton />
+      <BottomNav />
+      <WhatsAppButton />
     </div>
   )
 }

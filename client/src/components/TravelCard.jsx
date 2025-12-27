@@ -38,8 +38,20 @@ export default function TravelCard({ tour }) {
   return (
     <article className="trend-card">
       <div className="trend-card__media">
-        <img src={tour.img} alt={tour.title} />
-        <span className="badge badge--price">{tour.price}</span>
+        <img 
+          src={
+            tour.img?.startsWith('http') 
+              ? tour.img 
+              : tour.img?.startsWith('/') 
+                ? tour.img 
+                : `/images/${tour.img || 'placeholder.jpg'}`
+          } 
+          alt={tour.title}
+          onError={(e) => {
+            e.target.src = '/images/placeholder.jpg'
+          }}
+        />
+        <span className="badge badge--price">${tour.price}</span>
       </div>
       <div className="trend-card__body">
         <h3 className="trend-card__title">{tour.title}</h3>
