@@ -99,7 +99,12 @@ export default function Tour(){
       <div className="tour-hero" style={{backgroundImage:`url(${tour.img})`}}>
         <div className="hero-overlay">
           <h1>{tour.title}</h1>
-          <p>{tour.location} • {tour.days} days</p>
+          <p>
+            {tour.location} • {tour.days} days
+            {tour.difficulty && (
+              <span style={{ textTransform: 'capitalize' }}> • {tour.difficulty}</span>
+            )}
+          </p>
         </div>
       </div>
 
@@ -180,10 +185,12 @@ export default function Tour(){
         <aside className="right">
           <div className="box">
             <h3>Price</h3>
-            {!priceHidden ? (
+            {tour.showPrice !== false && !priceHidden ? (
               <div className="price big">${tour.price}</div>
             ) : (
-              <div style={{fontSize:16,fontWeight:700,color:'#2ecc71'}}>Price hidden — voucher applied</div>
+              <div style={{fontSize:16,fontWeight:700,color:'#2ecc71'}}>
+                {priceHidden ? 'Price hidden — voucher applied' : 'Price hidden'}
+              </div>
             )}
 
             <div style={{marginTop:12,display:'flex',gap:8,alignItems:'center'}}>

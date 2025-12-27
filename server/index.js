@@ -28,8 +28,8 @@ const app = express()
 app.use(cors())
 app.use(express.json({ limit: '10mb' }))
 
-// serve uploaded images from project images folder
-app.use('/images', express.static(path.join(__dirname, '..', 'images')))
+// serve uploaded images from client/public/images folder
+app.use('/images', express.static(path.join(__dirname, '..', 'client', 'public', 'images')))
 
 // Public routes
 app.use('/api/auth', authRoutes)

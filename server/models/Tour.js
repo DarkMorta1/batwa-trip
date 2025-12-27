@@ -30,6 +30,7 @@ const TourSchema = new mongoose.Schema({
   desc: { type: String, required: true },
   fullDescription: { type: String, default: '' },
   price: { type: Number, required: true, default: 0 },
+  showPrice: { type: Boolean, default: true },
   discountPrice: { type: Number, default: 0 },
   discountPercent: { type: Number, default: 0 },
   days: { type: Number, required: true, default: 1 },

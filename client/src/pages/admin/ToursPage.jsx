@@ -4,7 +4,7 @@ import Toast from '../../components/admin/Toast'
 import Modal from '../../components/admin/Modal'
 import ConfirmModal from '../../components/admin/ConfirmModal'
 import { useToast } from '../../hooks/useToast'
-import { apiRequest } from '../../utils/api'
+import { apiRequest, API, authHeaders } from '../../utils/api'
 
 export default function ToursPage() {
   const { toasts, showToast, removeToast } = useToast()
@@ -20,6 +20,7 @@ export default function ToursPage() {
     fullDescription: '',
     img: '',
     price: 0,
+    showPrice: true,
     discountPrice: 0,
     discountPercent: 0,
     days: 1,
@@ -45,6 +46,8 @@ export default function ToursPage() {
       requirements: []
     }
   })
+  const [uploadingImage, setUploadingImage] = useState(false)
+  const [uploadingPhoto, setUploadingPhoto] = useState(false)
 
   useEffect(() => {
     fetchTours()
@@ -74,6 +77,7 @@ export default function ToursPage() {
       
       setFormData({
         ...tour,
+        showPrice: tour.showPrice !== undefined ? tour.showPrice : true,
         itinerary: normalizedItinerary,
         photos: tour.photos || [],
         includes: tour.includes || [],
@@ -83,7 +87,7 @@ export default function ToursPage() {
       setSelectedTour(tour)
     } else {
       setFormData({
-        title: '', desc: '', fullDescription: '', img: '', price: 0, discountPrice: 0, discountPercent: 0,
+        title: '', desc: '', fullDescription: '', img: '', price: 0, showPrice: true, discountPrice: 0, discountPercent: 0,
         days: 1, nights: 0, location: '', difficulty: 'moderate', status: 'draft',
         trending: false, upcoming: false, featured: false, photos: [], videos: [], mapUrl: '',
         maxGroupSize: 15, minGroupSize: 2, includes: [], excludes: [], itinerary: [],
@@ -152,15 +156,105 @@ export default function ToursPage() {
     }
   }
 
-  function addPhoto() {
-    const url = prompt('Enter photo URL:')
-    if (url) {
-      setFormData({ ...formData, photos: [...formData.photos, url] })
+  async function handleAdditionalPhotoUpload(e) {
+    const file = e.target.files[0]
+    if (!file) return
+
+    if (!file.type.startsWith('image/')) {
+      showToast('Please upload an image file', 'error')
+      return
+    }
+
+    try {
+      setUploadingPhoto(true)
+      const uploadFormData = new FormData()
+      uploadFormData.append('file', file)
+
+      const token = localStorage.getItem('admin_token')
+      const headers = token ? { Authorization: `Bearer ${token}` } : {}
+      
+      const response = await fetch(`${API}/api/upload`, {
+        method: 'POST',
+        headers: headers,
+        body: uploadFormData
+      })
+
+      if (response.status === 401) {
+        localStorage.removeItem('admin_token')
+        window.location.href = '/admin/login'
+        throw new Error('Unauthorized')
+      }
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ message: 'Upload failed' }))
+        throw new Error(error.message || 'Upload failed')
+      }
+
+      const data = await response.json()
+      setFormData(prev => ({ ...prev, photos: [...prev.photos, data.path] }))
+      showToast('Photo uploaded successfully', 'success')
+    } catch (error) {
+      showToast(error.message || 'Upload failed', 'error')
+    } finally {
+      setUploadingPhoto(false)
+      e.target.value = '' // Reset input
     }
   }
 
   function removePhoto(index) {
     setFormData({ ...formData, photos: formData.photos.filter((_, i) => i !== index) })
+    showToast('Photo removed', 'success')
+  }
+
+  async function handleImageUpload(e) {
+    const file = e.target.files[0]
+    if (!file) return
+
+    if (!file.type.startsWith('image/')) {
+      showToast('Please upload an image file', 'error')
+      return
+    }
+
+    try {
+      setUploadingImage(true)
+      const uploadFormData = new FormData()
+      uploadFormData.append('file', file)
+
+      const token = localStorage.getItem('admin_token')
+      // Don't set Content-Type header - let browser set it with boundary for FormData
+      const headers = token ? { Authorization: `Bearer ${token}` } : {}
+      
+      const response = await fetch(`${API}/api/upload`, {
+        method: 'POST',
+        headers: headers,
+        body: uploadFormData
+      })
+
+      if (response.status === 401) {
+        localStorage.removeItem('admin_token')
+        window.location.href = '/admin/login'
+        throw new Error('Unauthorized')
+      }
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ message: 'Upload failed' }))
+        throw new Error(error.message || 'Upload failed')
+      }
+
+      const data = await response.json()
+      setFormData(prev => ({ ...prev, img: data.path }))
+      showToast('Image uploaded successfully', 'success')
+    } catch (error) {
+      showToast(error.message || 'Upload failed', 'error')
+    } finally {
+      setUploadingImage(false)
+      e.target.value = '' // Reset input
+    }
+  }
+
+  function removeImage() {
+    setFormData(prev => ({ ...prev, img: '' }))
+    showToast('Image removed', 'success')
   }
 
   // Itinerary management functions
@@ -406,6 +500,24 @@ export default function ToursPage() {
                   className="admin-input"
                   required
                 />
+                <div style={{ marginTop: '8px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, showPrice: !formData.showPrice })}
+                    className="admin-btn"
+                    style={{
+                      padding: '6px 12px',
+                      fontSize: '13px',
+                      background: formData.showPrice ? '#e5e7eb' : '#3f51b5',
+                      color: formData.showPrice ? '#1f2937' : '#fff',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '6px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Price ({formData.showPrice ? 'Show' : 'Hide'})
+                  </button>
+                </div>
               </div>
               <div className="admin-form-group">
                 <label className="admin-label">Days *</label>
@@ -432,48 +544,110 @@ export default function ToursPage() {
             </div>
 
             <div className="admin-form-group">
-              <label className="admin-label">Image URL *</label>
+              <label className="admin-label">Image *</label>
               <input
-                type="text"
-                value={formData.img}
-                onChange={e => setFormData({ ...formData, img: e.target.value })}
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
                 className="admin-input"
-                placeholder="/images/tour.jpg or full URL"
-                required
+                disabled={uploadingImage}
+                style={{ padding: '8px' }}
               />
+              {uploadingImage && <div style={{ marginTop: '8px', color: '#6b7280' }}>Uploading...</div>}
+              {formData.img && (
+                <div style={{ marginTop: '12px', position: 'relative', display: 'inline-block' }}>
+                  <img 
+                    src={formData.img.startsWith('http') ? formData.img : (formData.img.startsWith('/') ? formData.img : `/images/${formData.img}`)} 
+                    alt="Preview" 
+                    style={{ maxWidth: '200px', maxHeight: '150px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #e5e7eb' }} 
+                  />
+                  <button
+                    type="button"
+                    onClick={removeImage}
+                    className="admin-btn admin-btn-danger"
+                    style={{
+                      position: 'absolute',
+                      top: '4px',
+                      right: '4px',
+                      padding: '4px 8px',
+                      fontSize: '12px',
+                      borderRadius: '4px',
+                      background: 'rgba(220, 38, 38, 0.9)',
+                      color: 'white',
+                      border: 'none',
+                      cursor: 'pointer',
+                      zIndex: 10
+                    }}
+                    title="Remove image"
+                  >
+                    × Remove
+                  </button>
+                  <div style={{ marginTop: '8px', fontSize: '12px', color: '#6b7280' }}>Current: {formData.img}</div>
+                </div>
+              )}
             </div>
 
             <div className="admin-form-group">
               <label className="admin-label">Additional Photos</label>
-              <button type="button" onClick={addPhoto} className="admin-btn admin-btn-secondary" style={{ marginBottom: '8px' }}>
-                + Add Photo
-              </button>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '8px' }}>
-                {formData.photos.map((photo, index) => (
-                  <div key={index} style={{ position: 'relative' }}>
-                    <img src={photo} alt={`Photo ${index + 1}`} style={{ width: '100%', height: '80px', objectFit: 'cover', borderRadius: '6px' }} />
-                    <button 
-                      type="button"
-                      onClick={() => removePhoto(index)}
-                      style={{ 
-                        position: 'absolute', 
-                        top: '4px', 
-                        right: '4px', 
-                        background: 'red', 
-                        color: 'white', 
-                        border: 'none', 
-                        borderRadius: '50%', 
-                        width: '20px', 
-                        height: '20px', 
-                        cursor: 'pointer',
-                        fontSize: '12px'
-                      }}
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
-              </div>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleAdditionalPhotoUpload}
+                className="admin-input"
+                disabled={uploadingPhoto}
+                style={{ padding: '8px', marginBottom: '8px' }}
+              />
+              {uploadingPhoto && <div style={{ marginBottom: '8px', color: '#6b7280' }}>Uploading...</div>}
+              {formData.photos && formData.photos.length > 0 && (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: '12px', marginTop: '12px' }}>
+                  {formData.photos.map((photo, index) => (
+                    <div key={index} style={{ position: 'relative' }}>
+                      <img 
+                        src={photo.startsWith('http') ? photo : (photo.startsWith('/') ? photo : `/images/${photo}`)} 
+                        alt={`Photo ${index + 1}`} 
+                        style={{ 
+                          width: '100%', 
+                          height: '100px', 
+                          objectFit: 'cover', 
+                          borderRadius: '6px',
+                          border: '1px solid #e5e7eb'
+                        }} 
+                        onError={(e) => {
+                          e.target.style.display = 'none'
+                        }}
+                      />
+                      <button 
+                        type="button"
+                        onClick={() => removePhoto(index)}
+                        className="admin-btn admin-btn-danger"
+                        style={{ 
+                          position: 'absolute', 
+                          top: '4px', 
+                          right: '4px', 
+                          padding: '4px 8px',
+                          fontSize: '11px',
+                          borderRadius: '4px',
+                          background: 'rgba(220, 38, 38, 0.9)', 
+                          color: 'white', 
+                          border: 'none', 
+                          cursor: 'pointer',
+                          zIndex: 10,
+                          minWidth: 'auto',
+                          minHeight: 'auto'
+                        }}
+                        title="Remove photo"
+                      >
+                        × Remove
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {(!formData.photos || formData.photos.length === 0) && (
+                <div style={{ marginTop: '8px', padding: '16px', background: '#f9fafb', borderRadius: '6px', textAlign: 'center', color: '#6b7280' }}>
+                  No additional photos. Upload photos to display in the tour gallery.
+                </div>
+              )}
             </div>
 
             <div className="admin-form-group">
@@ -484,16 +658,16 @@ export default function ToursPage() {
                     checked={formData.trending}
                     onChange={e => setFormData({ ...formData, trending: e.target.checked })}
                   />
-                  Trending
+                  Available
                 </label>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                {/* <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
                   <input
                     type="checkbox"
                     checked={formData.featured}
                     onChange={e => setFormData({ ...formData, featured: e.target.checked })}
                   />
                   Featured
-                </label>
+                </label> */}
                 <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
                   <input
                     type="checkbox"

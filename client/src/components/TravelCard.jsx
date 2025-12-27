@@ -51,12 +51,17 @@ export default function TravelCard({ tour }) {
             e.target.src = '/images/placeholder.jpg'
           }}
         />
-        <span className="badge badge--price">${tour.price}</span>
+        {tour.showPrice !== false && <span className="badge badge--price">${tour.price}</span>}
       </div>
       <div className="trend-card__body">
         <h3 className="trend-card__title">{tour.title}</h3>
         <p className="trend-card__meta">
           {tour.days} Days • {tour.location}
+          {tour.difficulty && (
+            <span style={{ marginLeft: '8px', textTransform: 'capitalize' }}>
+              • {tour.difficulty}
+            </span>
+          )}
         </p>
         <div style={{display:'flex',flexDirection:'column',gap:8}}>
           <div style={{display:'flex',alignItems:'center',gap:8}}>
@@ -64,7 +69,7 @@ export default function TravelCard({ tour }) {
             className="btn btn--pink"
             onClick={() => nav(`/tour/${tour.id}`)}
           >
-            View Details
+            Details
           </button>
           <a
             className="btn btn--ghost"
@@ -80,14 +85,14 @@ export default function TravelCard({ tour }) {
             onClick={shareTour}
             aria-label={`Share ${tour.title}`}
           >
-            Share
+            Share 
           </button>
           {copied && <span className="share__copied">Link copied</span>}
           </div>
 
-          <div style={{display:'flex',gap:8,alignItems:'center'}}>
+          {/* <div style={{display:'flex',gap:8,alignItems:'center'}}>
             <div style={{marginLeft:'auto', fontWeight:700}}>${tour.price}</div>
-          </div>
+          </div> */}
         </div>
       </div>
     </article>

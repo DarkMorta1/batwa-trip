@@ -8,6 +8,7 @@ import BlogDetail from './pages/BlogDetail'
 import Contact from './pages/Contact'
 import AdminLogin from './pages/AdminLogin'
 import ToursPage from './pages/admin/ToursPage'
+import BlogsPage from './pages/admin/BlogsPage'
 import ReviewsPage from './pages/admin/ReviewsPage'
 import VouchersPage from './pages/admin/VouchersPage'
 import BannerSettingsPage from './pages/admin/BannerSettingsPage'
@@ -65,6 +66,7 @@ export default function App() {
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<AdminRoute><ToursPage /></AdminRoute>} />
         <Route path="/admin/tours" element={<AdminRoute><ToursPage /></AdminRoute>} />
+        <Route path="/admin/blogs" element={<AdminRoute><BlogsPage /></AdminRoute>} />
         <Route path="/admin/reviews" element={<AdminRoute><ReviewsPage /></AdminRoute>} />
         <Route path="/admin/vouchers" element={<AdminRoute><VouchersPage /></AdminRoute>} />
         <Route path="/admin/banner" element={<AdminRoute><BannerSettingsPage /></AdminRoute>} />

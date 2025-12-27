@@ -60,19 +60,41 @@ img { display: block; width: 100%; height: auto; border-radius: var(--radius); }
 .section__title { margin: 2px 0 0; font-size: 22px; font-weight: 700; color: var(--text); }
 .section__title--pink { color: var(--pink); }
 .section__title--strong { color: var(--text); }
-.section__subtitle { display: block; color: #aaa; font-weight: 600; text-transform: capitalize; }
+.section__subtitle { display: block; color: #cc631d; font-weight: 600; text-transform: capitalize; }
 .section__link { display: inline-block; color: var(--blue); font-weight: 600; margin-top: 10px; text-decoration: none; }
 
 /* Pager arrows */
-.pager { display: flex; gap: 6px; }
+/* Pager container */
+.pager {
+  display: flex;
+  gap: 12px; /* Slightly larger gap between the buttons */
+  align-items: center; /* Ensure the buttons are vertically aligned */
+  justify-content: center; /* Center the pager if needed */
+}
+
+/* Pager button */
 .pager__btn {
-  width: 28px; height: 28px;
+  width: 36px; /* Slightly larger button */
+  height: 36px;
   border-radius: 50%;
   border: 1px solid var(--border);
-  background: #f8f8f8;
+  background: #fff; /* White background for contrast */
   color: var(--muted);
   font-weight: 700;
+  font-size: 16px; /* Bigger font size for better readability */
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Center the content inside the button */
+  transition: all 0.3s ease; /* Smooth transition for hover effects */
   cursor: pointer;
+}
+
+/* Hover state */
+.pager__btn:hover {
+  background: var(--primary-color, #007bff); /* Change background on hover */
+  color: #fff; /* White text color on hover */
+  border-color: var(--primary-color, #007bff); /* Change border color on hover */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow on hover */
 }
 
 /* Hero */
@@ -1025,3 +1047,7 @@ img {
   height: auto;
 }
 
+/* href ko underline remove */
+a {
+  text-decoration: none;
+}
