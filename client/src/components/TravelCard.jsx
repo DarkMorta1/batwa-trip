@@ -51,7 +51,7 @@ export default function TravelCard({ tour }) {
             e.target.src = '/images/placeholder.jpg'
           }}
         />
-        {tour.showPrice !== false && <span className="badge badge--price">${tour.price}</span>}
+        {tour.showPrice !== false && <span className="badge badge--price">RS{tour.price}</span>}
       </div>
       <div className="trend-card__body">
         <h3 className="trend-card__title">{tour.title}</h3>
@@ -91,7 +91,7 @@ export default function TravelCard({ tour }) {
           </div>
 
           {/* <div style={{display:'flex',gap:8,alignItems:'center'}}>
-            <div style={{marginLeft:'auto', fontWeight:700}}>${tour.price}</div>
+            <div style={{marginLeft:'auto', fontWeight:700}}>RS{tour.price}</div>
           </div> */}
         </div>
       </div>
