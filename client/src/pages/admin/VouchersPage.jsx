@@ -165,7 +165,7 @@ export default function VouchersPage() {
                     <span style={{ fontWeight: '600' }}>
                       {voucher.discountType === 'percentage' 
                         ? `${voucher.discountValue}%`
-                        : `$${voucher.discountValue}`}
+                         : `RS${voucher.discountValue}`}
                     </span>
                   </div>
                   {voucher.usageLimit && (
