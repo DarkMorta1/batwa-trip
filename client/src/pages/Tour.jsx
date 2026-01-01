@@ -170,7 +170,7 @@ export default function Tour(){
           <div className="box">
             <h3>Price</h3>
             {tour.showPrice !== false ? (
-              <div className="price big">${tour.price}</div>
+              <div className="price big">RS{tour.price}</div>
             ) : (
               <div style={{fontSize:16,fontWeight:700,color:'#2ecc71'}}>
                 Price hidden
