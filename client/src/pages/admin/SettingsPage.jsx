@@ -25,7 +25,7 @@ export default function SettingsPage() {
     maintenanceMessage: '',
     bookingEnabled: true,
     currency: 'USD',
-    currencySymbol: '$',
+    currencySymbol: 'RS',
     timezone: 'UTC'
   })
   const [loading, setLoading] = useState(true)
