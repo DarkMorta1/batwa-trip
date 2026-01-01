@@ -66,7 +66,7 @@ export default function AdminDashboardPage() {
         <div className="admin-grid admin-grid-4">
           <StatCard title="Total Users" value={stats?.totalUsers} icon="👥" color="blue" />
           <StatCard title="Total Bookings" value={stats?.totalBookings} icon="📅" color="green" />
-          <StatCard title="Total Revenue" value={`$${stats?.totalRevenue?.toFixed(2) || 0}`} icon="💰" color="purple" />
+          <StatCard title="Total Revenue" value={`RS ${stats?.totalRevenue?.toFixed(2) || 0}`} icon="💰" color="purple" />
           <StatCard title="Published Tours" value={stats?.publishedTours} icon="🗺️" color="orange" />
         </div>
 
@@ -92,7 +92,7 @@ export default function AdminDashboardPage() {
                     </span>
                     <div className="admin-flex admin-gap-4">
                       <div className="admin-text-sm admin-text-gray-600">{item.bookings} bookings</div>
-                      <div style={{ fontWeight: 'bold', color: '#10b981' }}>${item.revenue.toFixed(2)}</div>
+                      <div style={{ fontWeight: 'bold', color: '#10b981' }}>RS{item.revenue.toFixed(2)}</div>
                     </div>
                   </div>
                 ))}
@@ -114,7 +114,7 @@ export default function AdminDashboardPage() {
                       <p className="admin-text-sm admin-text-gray-600" style={{ margin: 0 }}>{booking.tourTitle}</p>
                     </div>
                     <div style={{ textAlign: 'right' }}>
-                      <p style={{ fontWeight: 'bold', margin: '0 0 4px 0' }}>${booking.totalAmount}</p>
+                      <p style={{ fontWeight: 'bold', margin: '0 0 4px 0' }}>RS{booking.totalAmount}</p>
                       <span className={`admin-badge ${
                         booking.status === 'approved' ? 'admin-badge-success' :
                         booking.status === 'pending' ? 'admin-badge-warning' :
