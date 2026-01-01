@@ -405,7 +405,7 @@ export default function ToursPage() {
                         </div>
                       </div>
                     </td>
-                    <td>${tour.price}</td>
+                    <td>RS{tour.price}</td>
                     <td>
                       <span className={`admin-badge ${
                         tour.status === 'published' ? 'admin-badge-success' :
