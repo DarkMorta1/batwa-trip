@@ -159,7 +159,7 @@ export default function BookingsPage() {
                     <td>{booking.tourTitle || (booking.tourId?.title) || 'N/A'}</td>
                     <td>{new Date(booking.travelDate).toLocaleDateString()}</td>
                     <td>{booking.numberOfTravelers}</td>
-                    <td style={{ fontWeight: '600' }}>${booking.totalAmount}</td>
+                    <td style={{ fontWeight: '600' }}>RS{booking.totalAmount}</td>
                     <td>
                       <select
                         value={booking.status}
