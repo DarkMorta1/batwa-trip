@@ -19,7 +19,7 @@ const WebsiteSettingsSchema = new mongoose.Schema({
   maintenanceMessage: { type: String, default: 'We are currently under maintenance. Please check back soon.' },
   bookingEnabled: { type: Boolean, default: true },
   currency: { type: String, default: 'USD' },
-  currencySymbol: { type: String, default: '$' },
+  currencySymbol: { type: String, default: 'RS' },
   timezone: { type: String, default: 'UTC' }
 }, { timestamps: true })
 
