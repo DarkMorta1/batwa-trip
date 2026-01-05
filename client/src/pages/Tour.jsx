@@ -178,8 +178,22 @@ export default function Tour(){
             )}
 
             <p className="muted" style={{marginTop:12}}>{tour.details?.expenses}</p>
+            <button
+  className="btn"
+  onClick={() => window.open("https://wa.me/9779801113349", "_blank")}
+  style={{ width:'100%', minHeight:'44px', padding:'12px 20px', marginBottom: '8px' }}
+>
+  Inquiry Now
+</button>
 
-            <button className="btn" onClick={() => window.open("https://forms.gle/vyEDLUAQUj8dSUvt8", "_blank")} style={{width:'100%',minHeight:'44px',padding:'12px 20px'}}>Inquiry Now</button>
+<button
+  className="btn"
+  onClick={() => window.open("https://forms.gle/vyEDLUAQUj8dSUvt8", "_blank")}
+  style={{ width:'100%', minHeight:'44px', padding:'12px 20px' }}
+>
+  Book Now
+</button>
+
 
           </div>
         </aside>
