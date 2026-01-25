@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Banner from '../components/Banner'
 import TravelCard from '../components/TravelCard'
-import localTours from '../data/tours'
-import localBlogs from '../data/blogs'
 import { buildWhatsAppLink } from '../constants/whatsapp'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:4000'
@@ -18,8 +16,8 @@ const memoryPhotos = [
 ]
 
 export default function Home() {
-  const [tours, setTours] = useState(localTours)
-  const [blogs, setBlogs] = useState(localBlogs)
+  const [tours, setTours] = useState([])
+  const [blogs, setBlogs] = useState([])
   const [reviews, setReviews] = useState([])
   const [showReviewForm, setShowReviewForm] = useState(false)
   const [reviewForm, setReviewForm] = useState({ author:'', rating:5, message:'' })
@@ -29,8 +27,8 @@ export default function Home() {
   const [showAllReviews, setShowAllReviews] = useState(false)
   const [currentBlogIndex, setCurrentBlogIndex] = useState(0)
   useEffect(() => {
-    // Fetch published tours only - backend filters this automatically for public routes
-    fetch(`${API}/api/tours`)
+    // Fetch tours in display order (uses display-settings endpoint)
+    fetch(`${API}/api/display-settings/tours`)
       .then(r => {
         if (!r.ok) {
           console.error('Failed to fetch tours:', r.status, r.statusText)
@@ -40,30 +38,21 @@ export default function Home() {
       })
       .then(data => {
         console.log('Fetched tours from backend:', data.length, 'tours')
-        // Backend already filters to published, but double-check for safety
-        const publishedTours = data.filter(t => t.status === 'published')
-        console.log('Published tours:', publishedTours.length)
-        
-        if (publishedTours.length > 0) {
-          setTours(publishedTours.map(d => ({ ...d, id: d.id || d._id })))
+        // Backend already filters to published and orders them
+        if (data.length > 0) {
+          setTours(data.map(d => ({ ...d, id: d.id || d._id })))
         } else {
           console.warn('⚠️ No published tours found!')
-          console.warn('   The backend returned', data.length, 'tours, but none are published.')
-          console.warn('   Solution: Go to /admin/tours and set tour status to "Published"')
-          // Keep local data as fallback if no published tours
-          if (data.length === 0) {
-            console.warn('   No tours in database at all. Using local fallback data.')
-          }
+          setTours([])
         }
       })
       .catch((error) => {
         console.error('Error fetching tours:', error)
-        // Keep local data as fallback
-        console.warn('Using local tour data as fallback')
+        setTours([])
       })
     
-    // Fetch all blogs
-    fetch(`${API}/api/blogs`)
+    // Fetch blogs in display order (uses display-settings endpoint)
+    fetch(`${API}/api/display-settings/blogs`)
       .then(r => {
         if (!r.ok) {
           console.error('Failed to fetch blogs:', r.status)
@@ -74,21 +63,18 @@ export default function Home() {
       .then(data => {
         console.log('Fetched blogs from backend:', data.length, 'blogs')
         if (data.length > 0) {
-          // Sort by createdAt (newest first) - show max 4, latest first
+          // Backend already orders them - show max 4
           const sortedBlogs = data
             .map(d => ({ ...d, id: d.id || d._id }))
-            .sort((a, b) => {
-              const dateA = new Date(a.createdAt || a.date || 0)
-              const dateB = new Date(b.createdAt || b.date || 0)
-              return dateB - dateA
-            })
-            .slice(0, 4) // Show max 4 blogs, latest first
+            .slice(0, 4) // Show max 4 blogs
           setBlogs(sortedBlogs)
+        } else {
+          setBlogs([])
         }
       })
       .catch((error) => {
         console.error('Error fetching blogs:', error)
-        console.warn('Using local blog data as fallback')
+        setBlogs([])
       })
     
     // Fetch approved reviews only - backend filters this automatically for public routes
@@ -162,7 +148,10 @@ export default function Home() {
         )}
         {upcoming.length > 3 && (
           <div style={{textAlign:'center', marginTop:16}}>
-            <button className="btn" onClick={()=>setShowAllUpcoming(s => !s)}>
+            <button className="btn" onClick={()=>{
+              setShowAllUpcoming(s => !s)
+              window.scrollTo({ top: 0, behavior: 'smooth' })
+            }}>
               {showAllUpcoming ? 'Show Less' : 'Show More'}
             </button>
           </div>
@@ -187,7 +176,10 @@ export default function Home() {
         )}
         {trending.length > 3 && (
           <div style={{textAlign:'center', marginTop:16}}>
-            <button className="btn" onClick={()=>setShowAllAvailable(s => !s)} style={{minHeight:'44px',padding:'12px 20px'}}>
+            <button className="btn" onClick={()=>{
+              setShowAllAvailable(s => !s)
+              window.scrollTo({ top: 0, behavior: 'smooth' })
+            }} style={{minHeight:'44px',padding:'12px 20px'}}>
               {showAllAvailable ? 'Show Less' : 'Show More'}
             </button>
           </div>

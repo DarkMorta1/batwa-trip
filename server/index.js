@@ -24,6 +24,7 @@ const homepageContentRoutes = require('./routes/homepageContent')
 const bannerSettingsRoutes = require('./routes/bannerSettings')
 const themeSettingsRoutes = require('./routes/themeSettings')
 const activityLogRoutes = require('./routes/activityLogs')
+const displaySettingsRoutes = require('./routes/displaySettings')
 
 const app = express()
 app.use(cors())
@@ -51,6 +52,7 @@ app.use('/api/reviews', reviewRoutes)
 app.use('/api/upload', uploadRoutes)
 app.use('/api/gallery', galleryRoutes)
 app.use('/api/banner', bannerSettingsRoutes)
+app.use('/api/display-settings', displaySettingsRoutes)
 
 // Admin routes
 app.use('/api/admin/dashboard', dashboardRoutes)
@@ -63,6 +65,7 @@ app.use('/api/admin/homepage-content', homepageContentRoutes)
 app.use('/api/admin/banner', bannerSettingsRoutes)
 app.use('/api/admin/theme', themeSettingsRoutes)
 app.use('/api/admin/activity-logs', activityLogRoutes)
+app.use('/api/admin/display-settings', displaySettingsRoutes)
 
 const PORT = process.env.PORT || 4000
 

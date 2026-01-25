@@ -27,6 +27,21 @@ export default function BlogsPage() {
     fetchBlogs()
   }, [])
 
+  const [displayOrder, setDisplayOrder] = useState({ tourOrder: [], blogOrder: [] })
+
+  useEffect(() => {
+    fetchDisplayOrder()
+  }, [])
+
+  async function fetchDisplayOrder() {
+    try {
+      const data = await apiRequest('/api/admin/display-settings')
+      setDisplayOrder(data || { tourOrder: [], blogOrder: [] })
+    } catch (error) {
+      console.error('Failed to fetch display order:', error)
+    }
+  }
+
   async function fetchBlogs() {
     try {
       setLoading(true)
@@ -37,6 +52,52 @@ export default function BlogsPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  async function saveDisplayOrder() {
+    try {
+      await apiRequest('/api/admin/display-settings', {
+        method: 'PUT',
+        body: JSON.stringify(displayOrder)
+      })
+      showToast('Display order saved successfully', 'success')
+      fetchDisplayOrder()
+    } catch (error) {
+      showToast(error.message || 'Failed to save display order', 'error')
+    }
+  }
+
+  function moveBlogInOrder(blogId, direction) {
+    const currentOrder = [...displayOrder.blogOrder]
+    const currentIndex = currentOrder.findIndex(id => id === blogId || id.toString() === blogId.toString())
+    
+    if (currentIndex === -1) {
+      // Blog not in order, add to end
+      setDisplayOrder({ ...displayOrder, blogOrder: [...currentOrder, blogId] })
+      return
+    }
+    
+    const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1
+    
+    if (targetIndex >= 0 && targetIndex < currentOrder.length) {
+      const newOrder = [...currentOrder]
+      [newOrder[currentIndex], newOrder[targetIndex]] = [newOrder[targetIndex], newOrder[currentIndex]]
+      setDisplayOrder({ ...displayOrder, blogOrder: newOrder })
+    }
+  }
+
+  function addBlogToOrder(blogId) {
+    const currentOrder = [...displayOrder.blogOrder]
+    if (!currentOrder.find(id => id === blogId || id.toString() === blogId.toString())) {
+      setDisplayOrder({ ...displayOrder, blogOrder: [...currentOrder, blogId] })
+    }
+  }
+
+  function removeBlogFromOrder(blogId) {
+    setDisplayOrder({
+      ...displayOrder,
+      blogOrder: displayOrder.blogOrder.filter(id => id !== blogId && id.toString() !== blogId.toString())
+    })
   }
 
   function openEditModal(blog = null) {
@@ -176,6 +237,114 @@ export default function BlogsPage() {
           </button>
         </div>
 
+        {/* Display Order Section - Similar to Banner Settings */}
+        <div className="admin-card">
+          <div className="admin-flex-between" style={{ marginBottom: '20px' }}>
+            <div>
+              <h2 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '4px' }}>Display Order</h2>
+              <p className="admin-text-gray-600" style={{ fontSize: '14px' }}>
+                Control the order in which blogs appear on the frontend. Blogs not in this list will appear after ordered blogs.
+              </p>
+            </div>
+            <button onClick={saveDisplayOrder} className="admin-btn admin-btn-primary">
+              Save Order
+            </button>
+          </div>
+
+          {displayOrder.blogOrder.length === 0 ? (
+            <div className="admin-text-center" style={{ padding: '40px', color: '#6b7280' }}>
+              No blogs in display order. Blogs will appear in default order (newest first).
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '16px' }}>
+              {displayOrder.blogOrder.map((blogId, index) => {
+                const blog = blogs.find(b => (b._id === blogId || b._id?.toString() === blogId.toString()))
+                if (!blog) return null
+                
+                return (
+                  <div key={blogId} className="admin-card" style={{ padding: '12px' }}>
+                    <div style={{ display: 'flex', gap: '12px', marginBottom: '8px' }}>
+                      {blog.thumb && (
+                        <img
+                          src={blog.thumb.startsWith('http') ? blog.thumb : (blog.thumb.startsWith('/') ? blog.thumb : `/images/${blog.thumb}`)}
+                          alt={blog.title}
+                          style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '6px' }}
+                          onError={(e) => { e.target.style.display = 'none' }}
+                        />
+                      )}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontWeight: '600', fontSize: '14px', marginBottom: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {blog.title}
+                        </div>
+                        <div className="admin-text-xs admin-text-gray-600">
+                          {blog.author || 'N/A'} • {blog.date || 'N/A'}
+                        </div>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                      <button
+                        onClick={() => moveBlogInOrder(blogId, 'up')}
+                        disabled={index === 0}
+                        className="admin-btn admin-btn-ghost"
+                        style={{ padding: '4px 8px', fontSize: '11px', flex: 1, opacity: index === 0 ? 0.4 : 1 }}
+                      >
+                        ↑
+                      </button>
+                      <button
+                        onClick={() => moveBlogInOrder(blogId, 'down')}
+                        disabled={index === displayOrder.blogOrder.length - 1}
+                        className="admin-btn admin-btn-ghost"
+                        style={{ padding: '4px 8px', fontSize: '11px', flex: 1, opacity: index === displayOrder.blogOrder.length - 1 ? 0.4 : 1 }}
+                      >
+                        ↓
+                      </button>
+                      <button
+                        onClick={() => removeBlogFromOrder(blogId)}
+                        className="admin-btn admin-btn-danger"
+                        style={{ padding: '4px 8px', fontSize: '11px', flex: 1 }}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+
+          {/* Add Blogs to Order */}
+          <div style={{ marginTop: '24px', paddingTop: '24px', borderTop: '1px solid #e5e7eb' }}>
+            <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '12px' }}>Add Blogs to Display Order</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px' }}>
+              {blogs
+                .filter(blog => !displayOrder.blogOrder.find(id => id === blog._id || id?.toString() === blog._id?.toString()))
+                .map(blog => (
+                  <div key={blog._id} className="admin-card" style={{ padding: '12px', cursor: 'pointer' }} onClick={() => addBlogToOrder(blog._id)}>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      {blog.thumb && (
+                        <img
+                          src={blog.thumb.startsWith('http') ? blog.thumb : (blog.thumb.startsWith('/') ? blog.thumb : `/images/${blog.thumb}`)}
+                          alt={blog.title}
+                          style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px' }}
+                          onError={(e) => { e.target.style.display = 'none' }}
+                        />
+                      )}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontWeight: '600', fontSize: '13px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {blog.title}
+                        </div>
+                        <div className="admin-text-xs admin-text-gray-600">{blog.author || 'N/A'}</div>
+                      </div>
+                    </div>
+                    <button className="admin-btn admin-btn-ghost" style={{ width: '100%', marginTop: '8px', padding: '4px 8px', fontSize: '12px' }}>
+                      + Add to Order
+                    </button>
+                  </div>
+                ))}
+            </div>
+          </div>
+        </div>
+
         {/* Blogs Table */}
         <div className="admin-table-container">
           <table className="admin-table">
@@ -218,7 +387,21 @@ export default function BlogsPage() {
                     <td className="admin-text-gray-600">{blog.author || 'N/A'}</td>
                     <td className="admin-text-gray-600">{blog.date || 'N/A'}</td>
                     <td>
-                      <div className="admin-flex admin-gap-3">
+                      <div className="admin-flex admin-gap-3" style={{ flexWrap: 'wrap', gap: '4px' }}>
+                        {displayOrder.blogOrder.find(id => id === blog._id || id?.toString() === blog._id?.toString()) ? (
+                          <span className="admin-badge admin-badge-info" style={{ fontSize: '11px', padding: '2px 6px' }}>
+                            In Order
+                          </span>
+                        ) : (
+                          <button
+                            onClick={() => addBlogToOrder(blog._id)}
+                            className="admin-btn admin-btn-ghost"
+                            style={{ padding: '4px 8px', fontSize: '11px' }}
+                            title="Add to display order"
+                          >
+                            + Order
+                          </button>
+                        )}
                         <button 
                           onClick={() => openEditModal(blog)} 
                           className="admin-btn admin-btn-ghost"

@@ -95,7 +95,9 @@ export default function Tour(){
       <div className="tour-content">
         <div className="left">
           <h2>About this tour</h2>
-          <p>{tour.desc}</p>
+          <p style={{ whiteSpace: 'pre-line' }}>
+  {tour.desc}
+</p>
           
           {/* Day-wise Itinerary */}
           {tour.itinerary && tour.itinerary.length > 0 && (

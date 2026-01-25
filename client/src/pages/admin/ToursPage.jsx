@@ -53,6 +53,21 @@ export default function ToursPage() {
     fetchTours()
   }, [statusFilter])
 
+  const [displayOrder, setDisplayOrder] = useState({ tourOrder: [], blogOrder: [] })
+
+  useEffect(() => {
+    fetchDisplayOrder()
+  }, [])
+
+  async function fetchDisplayOrder() {
+    try {
+      const data = await apiRequest('/api/admin/display-settings')
+      setDisplayOrder(data || { tourOrder: [], blogOrder: [] })
+    } catch (error) {
+      console.error('Failed to fetch display order:', error)
+    }
+  }
+
   async function fetchTours() {
     try {
       setLoading(true)
@@ -64,6 +79,52 @@ export default function ToursPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  async function saveDisplayOrder() {
+    try {
+      await apiRequest('/api/admin/display-settings', {
+        method: 'PUT',
+        body: JSON.stringify(displayOrder)
+      })
+      showToast('Display order saved successfully', 'success')
+      fetchDisplayOrder()
+    } catch (error) {
+      showToast(error.message || 'Failed to save display order', 'error')
+    }
+  }
+
+  function moveTourInOrder(tourId, direction) {
+    const currentOrder = [...displayOrder.tourOrder]
+    const currentIndex = currentOrder.findIndex(id => id === tourId || id.toString() === tourId.toString())
+    
+    if (currentIndex === -1) {
+      // Tour not in order, add to end
+      setDisplayOrder({ ...displayOrder, tourOrder: [...currentOrder, tourId] })
+      return
+    }
+    
+    const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1
+    
+    if (targetIndex >= 0 && targetIndex < currentOrder.length) {
+      const newOrder = [...currentOrder]
+      [newOrder[currentIndex], newOrder[targetIndex]] = [newOrder[targetIndex], newOrder[currentIndex]]
+      setDisplayOrder({ ...displayOrder, tourOrder: newOrder })
+    }
+  }
+
+  function addTourToOrder(tourId) {
+    const currentOrder = [...displayOrder.tourOrder]
+    if (!currentOrder.find(id => id === tourId || id.toString() === tourId.toString())) {
+      setDisplayOrder({ ...displayOrder, tourOrder: [...currentOrder, tourId] })
+    }
+  }
+
+  function removeTourFromOrder(tourId) {
+    setDisplayOrder({
+      ...displayOrder,
+      tourOrder: displayOrder.tourOrder.filter(id => id !== tourId && id.toString() !== tourId.toString())
+    })
   }
 
   function openEditModal(tour = null) {
@@ -366,6 +427,114 @@ export default function ToursPage() {
           </div>
         </div>
 
+        {/* Display Order Section - Similar to Banner Settings */}
+        <div className="admin-card">
+          <div className="admin-flex-between" style={{ marginBottom: '20px' }}>
+            <div>
+              <h2 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '4px' }}>Display Order</h2>
+              <p className="admin-text-gray-600" style={{ fontSize: '14px' }}>
+                Control the order in which tours appear on the frontend. Tours not in this list will appear after ordered tours.
+              </p>
+            </div>
+            <button onClick={saveDisplayOrder} className="admin-btn admin-btn-primary">
+              Save Order
+            </button>
+          </div>
+
+          {displayOrder.tourOrder.length === 0 ? (
+            <div className="admin-text-center" style={{ padding: '40px', color: '#6b7280' }}>
+              No tours in display order. Tours will appear in default order (newest first).
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '16px' }}>
+              {displayOrder.tourOrder.map((tourId, index) => {
+                const tour = tours.find(t => (t._id === tourId || t._id?.toString() === tourId.toString()))
+                if (!tour) return null
+                
+                return (
+                  <div key={tourId} className="admin-card" style={{ padding: '12px' }}>
+                    <div style={{ display: 'flex', gap: '12px', marginBottom: '8px' }}>
+                      {tour.img && (
+                        <img
+                          src={tour.img.startsWith('http') ? tour.img : (tour.img.startsWith('/') ? tour.img : `/images/${tour.img}`)}
+                          alt={tour.title}
+                          style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '6px' }}
+                          onError={(e) => { e.target.style.display = 'none' }}
+                        />
+                      )}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontWeight: '600', fontSize: '14px', marginBottom: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {tour.title}
+                        </div>
+                        <div className="admin-text-xs admin-text-gray-600">
+                          {tour.location} • {tour.days} days
+                        </div>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                      <button
+                        onClick={() => moveTourInOrder(tourId, 'up')}
+                        disabled={index === 0}
+                        className="admin-btn admin-btn-ghost"
+                        style={{ padding: '4px 8px', fontSize: '11px', flex: 1, opacity: index === 0 ? 0.4 : 1 }}
+                      >
+                        ↑
+                      </button>
+                      <button
+                        onClick={() => moveTourInOrder(tourId, 'down')}
+                        disabled={index === displayOrder.tourOrder.length - 1}
+                        className="admin-btn admin-btn-ghost"
+                        style={{ padding: '4px 8px', fontSize: '11px', flex: 1, opacity: index === displayOrder.tourOrder.length - 1 ? 0.4 : 1 }}
+                      >
+                        ↓
+                      </button>
+                      <button
+                        onClick={() => removeTourFromOrder(tourId)}
+                        className="admin-btn admin-btn-danger"
+                        style={{ padding: '4px 8px', fontSize: '11px', flex: 1 }}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+
+          {/* Add Tours to Order */}
+          <div style={{ marginTop: '24px', paddingTop: '24px', borderTop: '1px solid #e5e7eb' }}>
+            <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '12px' }}>Add Tours to Display Order</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px' }}>
+              {filteredTours
+                .filter(tour => !displayOrder.tourOrder.find(id => id === tour._id || id?.toString() === tour._id?.toString()))
+                .map(tour => (
+                  <div key={tour._id} className="admin-card" style={{ padding: '12px', cursor: 'pointer' }} onClick={() => addTourToOrder(tour._id)}>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      {tour.img && (
+                        <img
+                          src={tour.img.startsWith('http') ? tour.img : (tour.img.startsWith('/') ? tour.img : `/images/${tour.img}`)}
+                          alt={tour.title}
+                          style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px' }}
+                          onError={(e) => { e.target.style.display = 'none' }}
+                        />
+                      )}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontWeight: '600', fontSize: '13px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {tour.title}
+                        </div>
+                        <div className="admin-text-xs admin-text-gray-600">{tour.status}</div>
+                      </div>
+                    </div>
+                    <button className="admin-btn admin-btn-ghost" style={{ width: '100%', marginTop: '8px', padding: '4px 8px', fontSize: '12px' }}>
+                      + Add to Order
+                    </button>
+                  </div>
+                ))}
+            </div>
+          </div>
+        </div>
+
         {/* Tours Table */}
         <div className="admin-table-container">
           <table className="admin-table">
@@ -424,7 +593,21 @@ export default function ToursPage() {
                     </td>
                     <td className="admin-text-gray-600">{tour.location}</td>
                     <td>
-                      <div className="admin-flex admin-gap-3">
+                      <div className="admin-flex admin-gap-3" style={{ flexWrap: 'wrap', gap: '4px' }}>
+                        {displayOrder.tourOrder.find(id => id === tour._id || id?.toString() === tour._id?.toString()) ? (
+                          <span className="admin-badge admin-badge-info" style={{ fontSize: '11px', padding: '2px 6px' }}>
+                            In Order
+                          </span>
+                        ) : (
+                          <button
+                            onClick={() => addTourToOrder(tour._id)}
+                            className="admin-btn admin-btn-ghost"
+                            style={{ padding: '4px 8px', fontSize: '11px' }}
+                            title="Add to display order"
+                          >
+                            + Order
+                          </button>
+                        )}
                         <button 
                           onClick={() => openEditModal(tour)} 
                           className="admin-btn admin-btn-ghost"

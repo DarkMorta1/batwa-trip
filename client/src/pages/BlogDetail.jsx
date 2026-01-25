@@ -50,21 +50,27 @@ export default function BlogDetail(){
       }}
       >←</button>
       <div className="blog-detail">
-  <h1>{blog.title}</h1>
-  <div className="meta">{blog.date} • By {blog.author}</div>
+        <h1>{blog.title}</h1>
+        <div className="meta">{blog.date} • By {blog.author}</div>
 
-  <div className="blog-detail-body">
-    <div className="blog-text">
-      {String(blog.content || '').split('\n').filter(p => p.trim()).map((p, i) => (
-        <p key={i}>{p.trim()}</p>
-      ))}
-    </div>
+        {/* Image at top */}
+        {blog.thumb && (
+          <div className="blog-image" style={{ marginTop: '24px', marginBottom: '24px' }}>
+            <img 
+              src={blog.thumb?.startsWith('http') ? blog.thumb : (blog.thumb?.startsWith('/') ? blog.thumb : `/images/${blog.thumb}`)} 
+              alt={blog.title}
+              style={{ width: '100%', height: 'auto', borderRadius: '8px' }}
+            />
+          </div>
+        )}
 
-    <div className="blog-image">
-      <img src={blog.thumb} alt={blog.title} />
-    </div>
-  </div>
-</div>
+        {/* Text content below image */}
+        <div className="blog-text">
+          {String(blog.content || '').split('\n').filter(p => p.trim()).map((p, i) => (
+            <p key={i}>{p.trim()}</p>
+          ))}
+        </div>
+      </div>
     </div>
   )
 }

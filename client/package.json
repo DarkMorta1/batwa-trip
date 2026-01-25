@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "npx vite build"    
+    "build": "npx vite build" , 
+    "dev:host": "vite --host"  
   },
   "dependencies": {
     "react": "18.2.0",
