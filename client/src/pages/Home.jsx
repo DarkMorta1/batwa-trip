@@ -134,10 +134,7 @@ export default function Home() {
         </div>
         {visibleUpcoming.length === 0 ? (
           <div style={{ padding: '40px', textAlign: 'center', color: 'rgba(255,255,255,0.7)' }}>
-            <p>No upcoming trips available. Check back soon!</p>
-            <p style={{ fontSize: '14px', marginTop: '8px' }}>
-              Admin: Make sure tours are set to "Published" status and "Upcoming" flag in the admin panel.
-            </p>
+            <p>Loading.... Please Wait</p>
           </div>
         ) : (
           <div className="grid grid--cards">
@@ -162,10 +159,7 @@ export default function Home() {
         <h2 className="section__title section__title--strong">Available Trips</h2>
         {visibleAvailable.length === 0 ? (
           <div style={{ padding: '40px', textAlign: 'center', color: 'rgba(255,255,255,0.7)' }}>
-            <p>No available trips at the moment. Check back soon!</p>
-            <p style={{ fontSize: '14px', marginTop: '8px' }}>
-              Admin: Make sure tours are set to "Published" status and "Trending" flag in the admin panel.
-            </p>
+             <p>Loading.... Please Wait</p>
           </div>
         ) : (
           <div className="grid grid--cards">
