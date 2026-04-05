@@ -47,7 +47,7 @@ export default function Tour(){
     }
   }
 
-  if(tour === null) return <div style={{padding:40, color:'#fff'}}>Tour not found</div>
+  if(tour === null) return <div style={{padding:40, color:'#fff'}}>Please Wait</div>
 
   return (
     <div className="tour-page">
