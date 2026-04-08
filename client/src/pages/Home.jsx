@@ -147,7 +147,6 @@ export default function Home() {
           <div style={{textAlign:'center', marginTop:16}}>
             <button className="btn" onClick={()=>{
               setShowAllUpcoming(s => !s)
-              window.scrollTo({ top: 0, behavior: 'smooth' })
             }}>
               {showAllUpcoming ? 'Show Less' : 'Show More'}
             </button>
@@ -172,7 +171,6 @@ export default function Home() {
           <div style={{textAlign:'center', marginTop:16}}>
             <button className="btn" onClick={()=>{
               setShowAllAvailable(s => !s)
-              window.scrollTo({ top: 0, behavior: 'smooth' })
             }} style={{minHeight:'44px',padding:'12px 20px'}}>
               {showAllAvailable ? 'Show Less' : 'Show More'}
             </button>
