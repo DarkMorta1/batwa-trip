@@ -318,61 +318,62 @@ export default function ToursPage() {
     showToast('Image removed', 'success')
   }
 
+  function normalizeItinerary(itinerary) {
+  return itinerary.map((day, i) => ({
+    ...day,
+    dayNumber: i + 1,
+    title: (day.title || '').replace(/Day\s+\d+/, `Day ${i + 1}`)
+  }))
+}
+
   // Itinerary management functions
-  function addItineraryDay() {
-    const newDayNumber = formData.itinerary.length + 1
-    setFormData({
-      ...formData,
-      itinerary: [
-        ...formData.itinerary,
-        {
-          dayNumber: newDayNumber,
-          title: `Day ${newDayNumber} – `,
-          description: ''
-        }
-      ]
-    })
-  }
-
-  function updateItineraryDay(index, field, value) {
-    const updated = [...formData.itinerary]
-    updated[index] = { ...updated[index], [field]: value }
-    // Auto-update dayNumber if title changes to match pattern
-    if (field === 'title' && value.startsWith('Day ')) {
-      const dayMatch = value.match(/Day\s+(\d+)/)
-      if (dayMatch) {
-        updated[index].dayNumber = parseInt(dayMatch[1])
-      }
+ function addItineraryDay() {
+  const updated = [
+    ...formData.itinerary,
+    {
+      title: `Day ${formData.itinerary.length + 1} – `,
+      description: ''
     }
-    setFormData({ ...formData, itinerary: updated })
+  ]
+
+  setFormData({
+    ...formData,
+    itinerary: normalizeItinerary(updated)
+  })
+}
+
+function updateItineraryDay(index, field, value) {
+  const updated = [...formData.itinerary]
+  updated[index] = { ...updated[index], [field]: value }
+
+  setFormData({
+    ...formData,
+    itinerary: normalizeItinerary(updated)
+  })
+}
+
+function removeItineraryDay(index) {
+  const updated = formData.itinerary.filter((_, i) => i !== index)
+
+  setFormData({
+    ...formData,
+    itinerary: normalizeItinerary(updated)
+  })
+}
+
+function moveItineraryDay(index, direction) {
+  const updated = [...formData.itinerary]
+  const targetIndex = direction === 'up' ? index - 1 : index + 1
+
+  if (targetIndex >= 0 && targetIndex < updated.length) {
+    ;[updated[index], updated[targetIndex]] = [updated[targetIndex], updated[index]]
   }
 
-  function removeItineraryDay(index) {
-    const updated = formData.itinerary.filter((_, i) => i !== index)
-    // Renumber remaining days
-    const renumbered = updated.map((day, i) => ({
-      ...day,
-      dayNumber: i + 1,
-      title: day.title.replace(/Day\s+\d+/, `Day ${i + 1}`)
-    }))
-    setFormData({ ...formData, itinerary: renumbered })
-  }
-
-  function moveItineraryDay(index, direction) {
-    const updated = [...formData.itinerary]
-    const targetIndex = direction === 'up' ? index - 1 : index + 1
-    
-    if (targetIndex >= 0 && targetIndex < updated.length) {
-      [updated[index], updated[targetIndex]] = [updated[targetIndex], updated[index]]
-      // Renumber all days
-      const renumbered = updated.map((day, i) => ({
-        ...day,
-        dayNumber: i + 1,
-        title: day.title.replace(/Day\s+\d+/, `Day ${i + 1}`)
-      }))
-      setFormData({ ...formData, itinerary: renumbered })
-    }
-  }
+  setFormData({
+    ...formData,
+    itinerary: normalizeItinerary(updated)
+  })
+}
 
   if (loading) {
     return (
