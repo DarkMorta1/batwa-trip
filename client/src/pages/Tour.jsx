@@ -10,6 +10,7 @@ export default function Tour(){
   const [tour, setTour] = useState(null)
 
   useEffect(()=>{
+    window.scrollTo(0, 0)
     // Fetch all tours (including published) to find the specific one
     fetch(`${API}/api/tours?status=published`)
       .then(r => {
