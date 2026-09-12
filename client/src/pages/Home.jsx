@@ -145,10 +145,8 @@ export default function Home() {
         )}
         {upcoming.length > 3 && (
           <div style={{textAlign:'center', marginTop:16}}>
-            <button className="btn" onClick={()=>{
-              setShowAllUpcoming(s => !s)
-            }}>
-              {showAllUpcoming ? 'Show Less' : 'Show More'}
+            <button className="btn" onClick={()=>{ nav('/trips/upcoming') }}>
+              Show More
             </button>
           </div>
         )}
@@ -169,10 +167,8 @@ export default function Home() {
         )}
         {trending.length > 3 && (
           <div style={{textAlign:'center', marginTop:16}}>
-            <button className="btn" onClick={()=>{
-              setShowAllAvailable(s => !s)
-            }} style={{minHeight:'44px',padding:'12px 20px'}}>
-              {showAllAvailable ? 'Show Less' : 'Show More'}
+            <button className="btn" onClick={()=>{ nav('/trips/available') }} style={{minHeight:'44px',padding:'12px 20px'}}>
+              Show More
             </button>
           </div>
         )}

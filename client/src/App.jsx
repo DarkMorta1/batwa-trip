@@ -6,6 +6,7 @@ import GalleryPage from './pages/GalleryPage'
 import Blogs from './pages/Blogs'
 import BlogDetail from './pages/BlogDetail'
 import Contact from './pages/Contact'
+import TripsPage from './pages/TripsPage'
 import AdminLogin from './pages/AdminLogin'
 import ToursPage from './pages/admin/ToursPage'
 import BlogsPage from './pages/admin/BlogsPage'
@@ -91,6 +92,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/tour/:id" element={<Tour />} />
+          <Route path="/trips/:section" element={<TripsPage />} />
           <Route path="/gallery" element={<GalleryPage />} />
           <Route path="/blogs" element={<Blogs />} />
           <Route path="/blog/:id" element={<BlogDetail />} />

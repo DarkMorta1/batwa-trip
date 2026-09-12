@@ -158,6 +158,30 @@ img { display: block; width: 100%; height: auto; border-radius: var(--radius); }
 .mini-blog .muted { color: var(--muted); margin: 0; }
 .mini-blog .meta { font-size: 13px; color: #777; margin: 0; }
 
+/* Search bar */
+.search-bar {
+  position: relative;
+}
+.search-bar__input {
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(63, 81, 181, 0.18);
+  background: linear-gradient(135deg, rgba(255,255,255,0.96), rgba(244,247,255,0.96));
+  box-shadow: 0 10px 24px rgba(63, 81, 181, 0.08);
+  font-size: 14px;
+  color: var(--text);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+.search-bar__input::placeholder {
+  color: #7b7b7b;
+}
+.search-bar__input:focus {
+  outline: none;
+  border-color: rgba(63, 81, 181, 0.7);
+  box-shadow: 0 0 0 4px rgba(63, 81, 181, 0.12);
+}
+
 /* Chips / category tags */
 .chips {
   display: flex;
