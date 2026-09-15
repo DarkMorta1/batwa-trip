@@ -58,9 +58,27 @@ export default function Banner() {
         className="hero__image"
         style={{ backgroundImage: `url(${currentImage.startsWith('http') ? currentImage : (currentImage.startsWith('/') ? currentImage : `/images/${currentImage}`)})` }}
       >
+        <img src="/images/logo.jpg" alt="Batuwa Travels" className="hero__logo" />
         <div className="hero__overlay">
-          <p className="hero__eyebrow">{bannerData.eyebrow}</p>
-          <h1 className="hero__title">{bannerData.title}</h1>
+          <div className="hero__brand">
+            <p className="hero__eyebrow">{bannerData.eyebrow}</p>
+            <h1 className="hero__title">{bannerData.title}</h1>
+          </div>
+          <div className="hero__about">
+            <p className="hero__about-label">About Us</p>
+            <p className="hero__about-text">
+             Batuwa Trip was founded with a vision of promoting tourism in Nepal by connecting travelers with the country’s diverse landscapes, rich culture, and lesser-known destinations.</p>
+            <p className="hero__about-text">
+              From hiking, trekking, and camping to jeep tours and customized journeys, we focus on creating well-planned travel experiences that make every journey smoother, more comfortable, and less hectic. With thoughtful management and local insight, we strive to help travelers discover Nepal beyond the ordinary.
+            </p>
+            <button
+              className="btn btn--pink hero__explore"
+              type="button"
+              onClick={() => document.getElementById('trips')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+            >
+              Explore
+            </button>
+          </div>
         </div>
       </div>
     </section>

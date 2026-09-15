@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { buildWhatsAppLink } from '../constants/whatsapp'
+import { getTourSlug } from '../utils/tourSlug'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:4000'
 
@@ -9,7 +10,7 @@ export default function TravelCard({ tour }) {
   const [copied, setCopied] = useState(false)
 
   const shareTour = useCallback(async () => {
-    const url = `${window.location.origin}/tour/${tour.id}`
+    const url = `${window.location.origin}/tour/${getTourSlug(tour.title)}`
     // Try native share first
     if (navigator.share) {
       try {
@@ -67,7 +68,7 @@ export default function TravelCard({ tour }) {
           <div style={{display:'flex',alignItems:'center',gap:8}}>
           <button
             className="btn btn--pink"
-            onClick={() => nav(`/tour/${tour.id}`)}
+            onClick={() => nav(`/tour/${getTourSlug(tour.title)}`)}
           >
             Details
           </button>

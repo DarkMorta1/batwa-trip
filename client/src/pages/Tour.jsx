@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import Gallery from '../components/Gallery'
+import { getTourSlug } from '../utils/tourSlug'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:4000'
 
 export default function Tour(){
-  const { id } = useParams()
+  const { slug } = useParams()
   const nav = useNavigate()
   const [tour, setTour] = useState(null)
 
@@ -18,9 +19,9 @@ export default function Tour(){
         throw new Error('Failed to fetch tours')
       })
       .then(data => {
-        // Find tour by id or slug
+        // Keep ID fallback for existing bookmarks while public links use title slugs.
         const found = data.map(d=>({ ...d, id: d.id || d._id })).find(t => 
-          (t.id === id || t._id === id || t.slug === id) && t.status === 'published'
+          (getTourSlug(t.title) === slug || t.id === slug || t._id === slug || t.slug === slug) && t.status === 'published'
         )
         if (found) {
           setTour(found)
@@ -32,7 +33,7 @@ export default function Tour(){
         console.error('Failed to load tour')
         setTour(null)
       })
-  }, [id])
+  }, [slug])
 
 
   const scrollToContact = () => {

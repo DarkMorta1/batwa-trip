@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Routes, Route, Link, useLocation } from 'react-router-dom'
 import Home from './pages/Home'
 import Tour from './pages/Tour'
@@ -31,9 +31,30 @@ const navItems = [
 
 function BottomNav() {
   const { pathname } = useLocation()
+  const [heroActive, setHeroActive] = useState(pathname === '/')
+
+  useEffect(() => {
+    if (pathname !== '/') {
+      setHeroActive(false)
+      return undefined
+    }
+
+    const hero = document.querySelector('.hero')
+    if (!hero) {
+      setHeroActive(false)
+      return undefined
+    }
+
+    const observer = new IntersectionObserver(([entry]) => {
+      setHeroActive(entry.isIntersecting)
+    }, { threshold: 0.1 })
+
+    observer.observe(hero)
+    return () => observer.disconnect()
+  }, [pathname])
 
   return (
-    <nav className="bottom-nav">
+    <nav className={`bottom-nav ${heroActive ? 'bottom-nav--hidden' : ''}`}>
       {navItems.map(item => {
         const isActive = pathname === item.path
         const Tag = item.disabled ? 'button' : Link
@@ -84,14 +105,16 @@ export default function App() {
   // Public routes
   return (
     <div className="page">
-      <header className="logo-bar">
-        <img src="/images/logo.jpg" alt="Logo" className="logo" />
-      </header>
+      {location.pathname !== '/' && (
+        <header className="logo-bar">
+          <img src="/images/logo.jpg" alt="Logo" className="logo" />
+        </header>
+      )}
 
       <main className="content">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/tour/:id" element={<Tour />} />
+          <Route path="/tour/:slug" element={<Tour />} />
           <Route path="/trips/:section" element={<TripsPage />} />
           <Route path="/gallery" element={<GalleryPage />} />
           <Route path="/blogs" element={<Blogs />} />

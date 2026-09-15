@@ -22,8 +22,6 @@ export default function Home() {
   const [showReviewForm, setShowReviewForm] = useState(false)
   const [reviewForm, setReviewForm] = useState({ author:'', rating:5, message:'' })
   const [reviewMessage, setReviewMessage] = useState('')
-  const [showAllUpcoming, setShowAllUpcoming] = useState(false)
-  const [showAllAvailable, setShowAllAvailable] = useState(false)
   const [showAllReviews, setShowAllReviews] = useState(false)
   const [currentBlogIndex, setCurrentBlogIndex] = useState(0)
   useEffect(() => {
@@ -100,10 +98,8 @@ export default function Home() {
   }, [])
 
   // Filter only published tours with flags
-  const trending = tours.filter(t => t.trending && t.status === 'published')
-  const upcoming = tours.filter(t => t.upcoming && t.status === 'published')
-  const visibleUpcoming = showAllUpcoming ? upcoming : upcoming.slice(0, 3)
-  const visibleAvailable = showAllAvailable ? trending : trending.slice(0, 3)
+  const trips = tours.filter(t => (t.trending || t.upcoming) && t.status === 'published')
+  const visibleTrips = trips.slice(0, 3)
   const nav = useNavigate()
 
   // Blog carousel - show 4 max, latest first, navigate with arrows
@@ -119,8 +115,8 @@ export default function Home() {
     <div className="home-page">
       <Banner />
 
-      <section className="section">
-        <h2 className="section__title section__title--strong">Upcoming Trips</h2>
+      <section id="trips" className="section">
+        <h2 className="section__title section__title--strong">Trips</h2>
         <div style={{margin:'8px 0 16px', textAlign:'right'}}>
           <a
             className="btn btn--pink"
@@ -132,43 +128,21 @@ export default function Home() {
             Customize Trip
           </a>
         </div>
-        {visibleUpcoming.length === 0 ? (
+        {visibleTrips.length === 0 ? (
           <div style={{ padding: '40px', textAlign: 'center', color: 'rgba(255,255,255,0.7)' }}>
             <p>Loading.... Please Wait</p>
           </div>
         ) : (
           <div className="grid grid--cards">
-            {visibleUpcoming.map(t => (
+            {visibleTrips.map(t => (
               <TravelCard key={t.id} tour={t} />
             ))}
           </div>
         )}
-        {upcoming.length > 3 && (
+        {trips.length > 3 && (
           <div style={{textAlign:'center', marginTop:16}}>
-            <button className="btn" onClick={()=>{ nav('/trips/upcoming') }}>
-              Show More
-            </button>
-          </div>
-        )}
-      </section>
-
-      <section className="section">
-        <h2 className="section__title section__title--strong">Available Trips</h2>
-        {visibleAvailable.length === 0 ? (
-          <div style={{ padding: '40px', textAlign: 'center', color: 'rgba(255,255,255,0.7)' }}>
-             <p>Loading.... Please Wait</p>
-          </div>
-        ) : (
-          <div className="grid grid--cards">
-            {visibleAvailable.map(tour => (
-              <TravelCard key={tour.id} tour={tour} />
-            ))}
-          </div>
-        )}
-        {trending.length > 3 && (
-          <div style={{textAlign:'center', marginTop:16}}>
-            <button className="btn" onClick={()=>{ nav('/trips/available') }} style={{minHeight:'44px',padding:'12px 20px'}}>
-              Show More
+            <button className="btn" onClick={()=>{ nav('/trips/all') }}>
+              See More
             </button>
           </div>
         )}
