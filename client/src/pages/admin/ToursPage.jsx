@@ -3,6 +3,7 @@ import AdminLayout from '../../components/admin/AdminLayout'
 import Toast from '../../components/admin/Toast'
 import Modal from '../../components/admin/Modal'
 import ConfirmModal from '../../components/admin/ConfirmModal'
+import RichTextEditor, { hasRichTextContent } from '../../components/RichTextEditor'
 import { useToast } from '../../hooks/useToast'
 import { apiRequest, API, authHeaders } from '../../utils/api'
 
@@ -43,11 +44,75 @@ export default function ToursPage() {
       expenses: '',
       cancellationPolicy: '',
       highlights: [],
-      requirements: []
+      requirements: [],
+      furtherInfo: ''
     }
   })
   const [uploadingImage, setUploadingImage] = useState(false)
   const [uploadingPhoto, setUploadingPhoto] = useState(false)
+
+  function createFurtherInfoSection(title = '', content = '') {
+    return {
+      id: `section-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      title,
+      content
+    }
+  }
+
+  function normalizeFurtherInfoSections(value) {
+    const rawSections = Array.isArray(value) ? value : (typeof value === 'string' && value.trim() ? [{ id: `legacy-${Date.now()}`, title: 'Overview', content: value }] : [])
+
+    return rawSections
+      .map((section, index) => ({
+        id: section?.id || `section-${index}-${Date.now()}`,
+        title: typeof section?.title === 'string' ? section.title.trim() : '',
+        content: typeof section?.content === 'string' ? section.content : (typeof section === 'string' ? section : ''),
+      }))
+      .filter(section => section.title || section.content)
+      .map((section, index) => ({
+        ...section,
+        title: section.title || `Section ${index + 1}`,
+      }))
+  }
+
+  function addFurtherInfoSection() {
+    setFormData(prev => {
+      const currentSections = normalizeFurtherInfoSections(prev.details?.furtherInfo)
+      return {
+        ...prev,
+        details: {
+          ...prev.details,
+          furtherInfo: [...currentSections, createFurtherInfoSection(`Section ${currentSections.length + 1}`, '')]
+        }
+      }
+    })
+  }
+
+  function updateFurtherInfoSection(sectionId, field, value) {
+    setFormData(prev => {
+      const currentSections = normalizeFurtherInfoSections(prev.details?.furtherInfo)
+      return {
+        ...prev,
+        details: {
+          ...prev.details,
+          furtherInfo: currentSections.map(section => section.id === sectionId ? { ...section, [field]: value } : section)
+        }
+      }
+    })
+  }
+
+  function removeFurtherInfoSection(sectionId) {
+    setFormData(prev => {
+      const currentSections = normalizeFurtherInfoSections(prev.details?.furtherInfo)
+      return {
+        ...prev,
+        details: {
+          ...prev.details,
+          furtherInfo: currentSections.filter(section => section.id !== sectionId)
+        }
+      }
+    })
+  }
 
   useEffect(() => {
     fetchTours()
@@ -143,7 +208,13 @@ export default function ToursPage() {
         photos: tour.photos || [],
         includes: tour.includes || [],
         excludes: tour.excludes || [],
-        details: tour.details || { expenses: '', cancellationPolicy: '', highlights: [], requirements: [] }
+        details: {
+          expenses: tour.details?.expenses || '',
+          cancellationPolicy: tour.details?.cancellationPolicy || '',
+          highlights: tour.details?.highlights || [],
+          requirements: tour.details?.requirements || [],
+          furtherInfo: normalizeFurtherInfoSections(tour.details?.furtherInfo)
+        }
       })
       setSelectedTour(tour)
     } else {
@@ -152,7 +223,7 @@ export default function ToursPage() {
         days: 1, nights: 0, location: '', difficulty: 'moderate', status: 'draft',
         trending: false, upcoming: false, featured: false, photos: [], videos: [], mapUrl: '',
         maxGroupSize: 15, minGroupSize: 2, includes: [], excludes: [], itinerary: [],
-        details: { expenses: '', cancellationPolicy: '', highlights: [], requirements: [] }
+        details: { expenses: '', cancellationPolicy: '', highlights: [], requirements: [], furtherInfo: [] }
       })
       setSelectedTour(null)
     }
@@ -161,7 +232,7 @@ export default function ToursPage() {
 
   async function saveTour() {
     try {
-      if (!formData.title || !formData.img || !formData.desc || !formData.location) {
+      if (!formData.title || !formData.img || !hasRichTextContent(formData.desc) || !formData.location) {
         showToast('Please fill required fields (Title, Image, Description, Location)', 'error')
         return
       }
@@ -180,9 +251,14 @@ export default function ToursPage() {
         description: day.description
       }))
 
+      const normalizedFurtherInfo = normalizeFurtherInfoSections(formData.details?.furtherInfo)
       const tourData = {
         ...formData,
-        itinerary: normalizedItinerary
+        itinerary: normalizedItinerary,
+        details: {
+          ...formData.details,
+          furtherInfo: normalizedFurtherInfo.length > 0 ? normalizedFurtherInfo : ''
+        }
       }
 
       if (selectedTour) {
@@ -665,13 +741,67 @@ function moveItineraryDay(index, direction) {
 
             <div className="admin-form-group">
               <label className="admin-label">Description *</label>
-              <textarea
+              <RichTextEditor
                 value={formData.desc}
-                onChange={e => setFormData({ ...formData, desc: e.target.value })}
-                rows={3}
-                className="admin-textarea"
-                required
+                onChange={value => setFormData({ ...formData, desc: value })}
+                placeholder="Write the tour description with headings, lists, links, and styling..."
               />
+            </div>
+
+            <div className="admin-form-group">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                <label className="admin-label" style={{ marginBottom: 0 }}>Further Information</label>
+                <button
+                  type="button"
+                  onClick={addFurtherInfoSection}
+                  className="admin-btn admin-btn-primary"
+                  style={{ padding: '6px 12px', fontSize: '13px' }}
+                >
+                  + Add Section
+                </button>
+              </div>
+
+              {(!Array.isArray(formData.details?.furtherInfo) || formData.details.furtherInfo.length === 0) ? (
+                <div style={{ border: '1px solid #e5e7eb', borderRadius: '10px', padding: '16px', background: '#f9fafb', color: '#6b7280' }}>
+                  No further information sections yet. Add a section to create structured content.
+                </div>
+              ) : (
+                <div style={{ display: 'grid', gap: '16px' }}>
+                  {normalizeFurtherInfoSections(formData.details?.furtherInfo).map((section, index) => (
+                    <div key={section.id} style={{ border: '1px solid #e5e7eb', borderRadius: '10px', background: '#fff', padding: '12px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                        <strong style={{ fontSize: '14px' }}>Section {index + 1}</strong>
+                        <button
+                          type="button"
+                          onClick={() => removeFurtherInfoSection(section.id)}
+                          className="admin-btn admin-btn-danger"
+                          style={{ padding: '4px 10px', fontSize: '12px' }}
+                        >
+                          Remove
+                        </button>
+                      </div>
+
+                      <div style={{ marginBottom: '10px' }}>
+                        <label className="admin-label" style={{ display: 'block', marginBottom: '6px' }}>Section Title</label>
+                        <input
+                          type="text"
+                          value={section.title || ''}
+                          onChange={e => updateFurtherInfoSection(section.id, 'title', e.target.value)}
+                          className="admin-input"
+                          placeholder="Overview, Highlights, FAQs, etc."
+                        />
+                      </div>
+
+                      <label className="admin-label" style={{ display: 'block', marginBottom: '6px' }}>Content</label>
+                      <RichTextEditor
+                        value={section.content || ''}
+                        onChange={value => updateFurtherInfoSection(section.id, 'content', value)}
+                        placeholder="Add section content..."
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }}>

@@ -482,6 +482,23 @@ img { display: block; width: 100%; height: auto; border-radius: var(--radius); }
 .blog-detail img{max-width:100%;height:auto;margin:24px 0;border-radius:8px}
 .blog-detail p{line-height:1.8;color:#333;margin:16px 0}
 
+.rich-text-editor{border:1px solid #dfe3f2;border-radius:10px;background:#fff;overflow:hidden;box-shadow:inset 0 1px 2px rgba(15,23,42,0.03)}
+.rich-text-toolbar{display:flex;flex-wrap:wrap;gap:6px;padding:8px;border-bottom:1px solid #eef2ff;background:#f8faff}
+.rich-text-toolbar-button{border:1px solid #dbe3f2;background:#fff;color:#1f2937;border-radius:6px;padding:6px 10px;font-size:12px;font-weight:600;cursor:pointer}
+.rich-text-toolbar-button:hover{background:#eef4ff}
+.rich-text-toolbar-select{border:1px solid #dbe3f2;background:#fff;color:#1f2937;border-radius:6px;padding:6px 8px;font-size:12px;min-width:120px}
+.rich-text-toolbar-color{display:inline-flex;align-items:center;gap:6px;border:1px solid #dbe3f2;background:#fff;color:#1f2937;border-radius:6px;padding:5px 8px;font-size:12px;cursor:pointer}
+.rich-text-toolbar-color input{width:18px;height:18px;border:none;background:transparent;padding:0;cursor:pointer}
+.rich-text-content{min-height:140px;padding:12px 14px;outline:none;line-height:1.7;color:#1f2937}
+.rich-text-content:empty:before{content:attr(data-placeholder);color:#9ca3af}
+.rich-text-content h1,.rich-text-content h2,.rich-text-content h3,.rich-text-content h4{margin:0.75em 0 0.4em;line-height:1.3;color:#111827}
+.rich-text-content p,.rich-text-content ul,.rich-text-content ol,.rich-text-content blockquote{margin:0.8em 0}
+.rich-text-content ul,.rich-text-content ol{padding-left:1.4rem}
+.rich-text-content a{color:var(--blue);text-decoration:underline}
+.rich-text-content img{max-width:100%;border-radius:8px;margin:12px 0}
+.rich-text-content table{width:100%;border-collapse:collapse;margin:12px 0}
+.rich-text-content th,.rich-text-content td{border:1px solid #e5e7eb;padding:8px 10px;text-align:left}
+
 /* Tour layout (preserve) */
 .tour-page .back{margin:18px;cursor:pointer;background:transparent;border:none;color:var(--blue)} 
 .tour-hero{height:40vh;background-size:cover;background-position:center;display:flex;align-items:flex-end}
@@ -489,6 +506,13 @@ img { display: block; width: 100%; height: auto; border-radius: var(--radius); }
 .tour-content{display:flex;gap:24px;padding:28px}
 .tour-content .left{flex:1}
 .tour-content .right{width:320px}
+.tour-rich-text{background:#fff;padding:18px 20px;border-radius:12px;border:1px solid #edf1ff;box-shadow:0 8px 18px rgba(58,88,199,0.04);color:#2a2f3d;line-height:1.8}
+.tour-rich-text p,.tour-rich-text ul,.tour-rich-text ol,.tour-rich-text blockquote,.tour-rich-text table{margin:0.9em 0}
+.tour-rich-text ul,.tour-rich-text ol{padding-left:1.4rem}
+.tour-rich-text a{color:var(--blue);text-decoration:underline}
+.tour-rich-text img{max-width:100%;border-radius:8px;margin:12px 0}
+.tour-rich-text h1,.tour-rich-text h2,.tour-rich-text h3,.tour-rich-text h4{margin:1em 0 0.5em;color:#111827;line-height:1.25}
+.tour-further-info{margin-top:32px}
 .box{background:#fff;padding:18px;border-radius:12px;box-shadow:0 8px 20px rgba(12,20,40,0.06)}
 .price.big{font-size:28px;color:var(--blue);font-weight:800;margin:8px 0}
 .muted{color:var(--muted)}

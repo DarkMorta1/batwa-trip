@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import Gallery from '../components/Gallery'
+import { sanitizeRichText, hasRichTextContent } from '../components/RichTextEditor'
 import { getTourSlug } from '../utils/tourSlug'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:4000'
@@ -51,6 +52,33 @@ export default function Tour(){
 
   if(tour === null) return <div style={{padding:40, color:'#fff'}}>Please Wait</div>
 
+  const descriptionHtml = sanitizeRichText(tour.desc || '')
+
+  const normalizeFurtherInfoSections = (value) => {
+    if (Array.isArray(value)) {
+      return value
+        .filter(Boolean)
+        .map((section, index) => ({
+          id: section?.id || `legacy-section-${index}`,
+          title: typeof section?.title === 'string' ? section.title.trim() : '',
+          content: typeof section?.content === 'string' ? section.content : ''
+        }))
+        .filter(section => section.title || section.content)
+        .map((section, index) => ({
+          ...section,
+          title: section.title || `Section ${index + 1}`
+        }))
+    }
+
+    if (typeof value === 'string' && value.trim()) {
+      return [{ id: 'legacy-further-info', title: 'Further Information', content: value }]
+    }
+
+    return []
+  }
+
+  const furtherInfoSections = normalizeFurtherInfoSections(tour.details?.furtherInfo)
+
   return (
     <div className="tour-page">
       <div style={{padding:'16px'}}>
@@ -97,9 +125,7 @@ export default function Tour(){
       <div className="tour-content">
         <div className="left">
           <h2>About this tour</h2>
-          <p style={{ whiteSpace: 'pre-line' }}>
-  {tour.desc}
-</p>
+          <div className="tour-rich-text" dangerouslySetInnerHTML={{ __html: descriptionHtml }} />
           
           {/* Day-wise Itinerary */}
           {tour.itinerary && tour.itinerary.length > 0 && (
@@ -167,6 +193,20 @@ export default function Tour(){
             <Gallery photos={tour.photos} />
           ) : (
             <p style={{ color: '#999', fontStyle: 'italic' }}>No gallery images available</p>
+          )}
+
+          {furtherInfoSections.length > 0 && (
+            <div className="tour-further-info">
+              <h3>Further Information</h3>
+              {furtherInfoSections.map((section, index) => (
+                <div key={section.id || index} style={{ marginBottom: '24px' }}>
+                  {section.title && <h4 style={{ marginBottom: '12px' }}>{section.title}</h4>}
+                  {hasRichTextContent(section.content) && (
+                    <div className="tour-rich-text" dangerouslySetInnerHTML={{ __html: sanitizeRichText(section.content) }} />
+                  )}
+                </div>
+              ))}
+            </div>
           )}
         </div>
 

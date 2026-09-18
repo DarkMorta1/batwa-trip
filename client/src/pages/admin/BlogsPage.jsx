@@ -3,6 +3,7 @@ import AdminLayout from '../../components/admin/AdminLayout'
 import Toast from '../../components/admin/Toast'
 import Modal from '../../components/admin/Modal'
 import ConfirmModal from '../../components/admin/ConfirmModal'
+import RichTextEditor from '../../components/RichTextEditor'
 import { useToast } from '../../hooks/useToast'
 import { apiRequest, API, authHeaders } from '../../utils/api'
 
@@ -522,11 +523,9 @@ export default function BlogsPage() {
 
             <div className="admin-form-group">
               <label className="admin-label">Content</label>
-              <textarea
+              <RichTextEditor
                 value={formData.content}
-                onChange={e => setFormData({ ...formData, content: e.target.value })}
-                rows={10}
-                className="admin-textarea"
+                onChange={value => setFormData({ ...formData, content: value })}
                 placeholder="Write your blog content here..."
               />
             </div>

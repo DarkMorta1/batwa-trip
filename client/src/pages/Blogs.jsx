@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { getBlogSlug } from '../utils/tourSlug'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:4000'
 
@@ -14,7 +15,7 @@ export default function Blogs(){
         if (r.ok) return r.json()
         throw new Error('Failed to fetch blogs')
       })
-      .then(data => setBlogs(data.map(d => ({ ...d, id: d.id || d._id }))))
+      .then(data => setBlogs(data.map(d => ({ ...d, id: d.id || d._id, slug: d.slug || getBlogSlug(d.title) }))))
       .catch(() => {
         console.warn('Failed to load blogs from backend')
       })
@@ -63,6 +64,7 @@ export default function Blogs(){
               : blog.thumb?.startsWith('/') 
                 ? blog.thumb 
                 : `/images/${blog.thumb || 'placeholder.jpg'}`
+            const blogSlug = blog.slug || getBlogSlug(blog.title)
             return (
               <div key={blog.id} className="blog-card">
                 <div className="blog-card-thumb" style={{backgroundImage:`url(${imageUrl})`}} />
@@ -70,7 +72,7 @@ export default function Blogs(){
                   <h3>{blog.title}</h3>
                   <p>{blog.excerpt}</p>
                   <div className="meta">{blog.date} • {blog.author}</div>
-                  <div className="read-more" onClick={() => nav(`/blog/${blog.id}`)}>Read More →</div>
+                  <div className="read-more" onClick={() => nav(`/blog/${blogSlug}`)}>Read More →</div>
                 </div>
               </div>
             )

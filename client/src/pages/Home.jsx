@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Banner from '../components/Banner'
 import TravelCard from '../components/TravelCard'
 import { buildWhatsAppLink } from '../constants/whatsapp'
+import { getBlogSlug } from '../utils/tourSlug'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:4000'
 import { useNavigate } from 'react-router-dom'
@@ -63,7 +64,7 @@ export default function Home() {
         if (data.length > 0) {
           // Backend already orders them - show max 4
           const sortedBlogs = data
-            .map(d => ({ ...d, id: d.id || d._id }))
+            .map(d => ({ ...d, id: d.id || d._id, slug: d.slug || getBlogSlug(d.title) }))
             .slice(0, 4) // Show max 4 blogs
           setBlogs(sortedBlogs)
         } else {
@@ -172,7 +173,7 @@ export default function Home() {
               <article 
                 key={latestBlogs[currentBlogIndex]?.id}
                 className="mini-blog" 
-                onClick={() => nav(`/blog/${latestBlogs[currentBlogIndex]?.id}`)}
+                onClick={() => nav(`/blog/${latestBlogs[currentBlogIndex]?.slug || getBlogSlug(latestBlogs[currentBlogIndex]?.title)}`)}
                 style={{ 
                   cursor: 'pointer',
                   background: '#fff',

@@ -118,7 +118,7 @@ export default function App() {
           <Route path="/trips/:section" element={<TripsPage />} />
           <Route path="/gallery" element={<GalleryPage />} />
           <Route path="/blogs" element={<Blogs />} />
-          <Route path="/blog/:id" element={<BlogDetail />} />
+          <Route path="/blog/:slug" element={<BlogDetail />} />
           <Route path="/contact" element={<Contact />} />
         </Routes>
       </main>

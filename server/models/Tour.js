@@ -62,7 +62,8 @@ const TourSchema = new mongoose.Schema({
     expenses: { type: String, default: '' },
     cancellationPolicy: { type: String, default: '' },
     highlights: { type: [String], default: [] },
-    requirements: { type: [String], default: [] }
+    requirements: { type: [String], default: [] },
+    furtherInfo: { type: mongoose.Schema.Types.Mixed, default: '' }
   },
   views: { type: Number, default: 0 },
   bookings: { type: Number, default: 0 }

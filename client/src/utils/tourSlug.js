@@ -6,3 +6,7 @@ export function getTourSlug(title) {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
 }
+
+export function getBlogSlug(title) {
+  return getTourSlug(title)
+}
