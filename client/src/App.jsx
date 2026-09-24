@@ -6,6 +6,7 @@ import GalleryPage from './pages/GalleryPage'
 import Blogs from './pages/Blogs'
 import BlogDetail from './pages/BlogDetail'
 import Contact from './pages/Contact'
+import About from './pages/About'
 import TripsPage from './pages/TripsPage'
 import AdminLogin from './pages/AdminLogin'
 import ToursPage from './pages/admin/ToursPage'
@@ -19,14 +20,16 @@ import SEOSettingsPage from './pages/admin/SEOSettingsPage'
 import ThemeSettingsPage from './pages/admin/ThemeSettingsPage'
 import SettingsPage from './pages/admin/SettingsPage'
 import ActivityLogsPage from './pages/admin/ActivityLogsPage'
+import AboutUsPage from './pages/admin/AboutUsPage'
 import WhatsAppButton from './components/WhatsAppButton'
 import AdminRoute from './components/AdminRoute'
 
 const navItems = [
   { path: '/', label: 'Home', icon: '🏠' },
+  { path: '/trips/all', label: 'Tips', icon: '🚶' },
   { path: '/gallery', label: 'Gallery', icon: '🖼️' },
   { path: '/blogs', label: 'Blogs', icon: '📖' },
-  { path: '/contact', label: 'Contact', icon: '📞' },
+  { path: '/about', label: 'About Us', icon: '👥' },
 ]
 
 function BottomNav() {
@@ -98,6 +101,7 @@ export default function App() {
         <Route path="/admin/theme" element={<AdminRoute><ThemeSettingsPage /></AdminRoute>} />
         <Route path="/admin/settings" element={<AdminRoute><SettingsPage /></AdminRoute>} />
         <Route path="/admin/activity" element={<AdminRoute><ActivityLogsPage /></AdminRoute>} />
+        <Route path="/admin/about" element={<AdminRoute><AboutUsPage /></AdminRoute>} />
       </Routes>
     )
   }
@@ -120,6 +124,7 @@ export default function App() {
           <Route path="/blogs" element={<Blogs />} />
           <Route path="/blog/:slug" element={<BlogDetail />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/about" element={<About />} />
         </Routes>
       </main>
 

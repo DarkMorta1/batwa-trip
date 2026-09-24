@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import TravelCard from '../components/TravelCard'
+import BackButton from '../components/BackButton'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:4000'
 
@@ -41,9 +42,7 @@ export default function TripsPage(){
   return (
     <div style={{ padding: 16 }}>
       <div style={{ marginBottom: 12 }}>
-        <button className="back" onClick={() => nav(-1)} style={{
-          background: '#3f51b5', border: 'none', borderRadius: '50%', width: '44px', height: '44px', color:'#fff'
-        }}>←</button>
+        <BackButton onClick={() => nav(-1)} />
       </div>
 
       <h2 style={{ marginTop: 0 }}>{title}</h2>

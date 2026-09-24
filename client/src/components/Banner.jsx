@@ -12,8 +12,8 @@ export default function Banner() {
       '/images/1765290625950.jpg',
       '/images/1765290626003.jpg'
     ],
-    title: 'TRAVEL WITH BATUWA',
-    eyebrow: 'Travel',
+    title: 'BATUWA TRIP',
+    eyebrow: 'BE A PART OF A NEW TRAIL, PROMOTING DOMESTIC TOURISM',
     rotationInterval: 4000,
     enabled: true
   })

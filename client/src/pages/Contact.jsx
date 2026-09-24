@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { contactMethods, socialLinks } from '../constants/contact'
+import BackButton from '../components/BackButton'
 
 export default function Contact() {
   const nav = useNavigate()
@@ -21,48 +23,10 @@ export default function Contact() {
     }, 3000)
   }
 
-  const contactMethods = [
-    { icon: '📞', label: 'Phone', value: '+977 9801113349', href: 'tel:+977 9801113349' },
-    { icon: '📧', label: 'Email', value: 'batuwatrip@gmail.com ', href: 'mailto:batuwatrip@gmail.com ' },
-    { icon: '📍', label: 'Location', value: 'Kathmandu, Nepal', href: '#' },
-    { icon: '⏰', label: 'Hours', value: '9AM - 6PM ', href: '#' },
-  ]
-
-   const socialLinks = [
-    { name: 'Facebook', icon: '/images/fb.png', url: 'https://www.facebook.com/share/1BZt5p95gK/', color: 'rgba(59, 89, 152, 0.2)', hoverColor: 'rgba(59, 89, 152, 0.4)'},
-    { name: 'Instagram', icon: '/images/Instagram_icon.png', url: 'https://www.instagram.com/batuwatrip', color: 'rgba(217, 48, 128, 0.2)', hoverColor: 'rgba(217, 48, 128, 0.4)' },
-    { name: 'WhatsApp', icon: '/images/WhatsApp.png', url: 'https://wa.me/9779801113349', color: 'rgba(37, 211, 102, 0.2)', hoverColor: 'rgba(37, 211, 102, 0.4)' },
-    { name: 'Call Now', icon: '/images/phone.png', url: 'tel:+977980-1113350', color: 'rgba(63, 81, 181, 0.2)', hoverColor: 'rgba(63, 81, 181, 0.4)' },
-  ]
-
   return (
     <div style={{ padding: '0', minHeight: 'calc(100vh - 140px)' }}>
       {/* Back Button */}
-      <div style={{ padding: '16px 28px' }}>
-        <button className="back" onClick={() => nav('/')} style={{
-          background: '#3f51b5',
-          border: 'none',
-          borderRadius: '50%',
-          width: '40px',
-          height: '40px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: '20px',
-          cursor: 'pointer',
-          color: '#fff',
-          transition: 'all 200ms'
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.background = '#2d3a8c'
-          e.currentTarget.style.transform = 'scale(1.1)'
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.background = '#3f51b5'
-          e.currentTarget.style.transform = 'scale(1)'
-        }}
-        >←</button>
-      </div>
+      <div className="subpage-container__back"><BackButton onClick={() => nav('/')} /></div>
 
       {/* Header Section */}
       <div style={{ padding: '0 16px 28px', maxWidth: '1120px', margin: '0 auto' }}>

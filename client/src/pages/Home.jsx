@@ -3,6 +3,7 @@ import Banner from '../components/Banner'
 import TravelCard from '../components/TravelCard'
 import { buildWhatsAppLink } from '../constants/whatsapp'
 import { getBlogSlug } from '../utils/tourSlug'
+import Footer from '../components/Footer'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:4000'
 import { useNavigate } from 'react-router-dom'
@@ -393,6 +394,7 @@ export default function Home() {
 
   </div>
 </section>
+      <Footer />
     </div>
   )
 }

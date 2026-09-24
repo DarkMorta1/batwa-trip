@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import Gallery from '../components/Gallery'
 import { sanitizeRichText, hasRichTextContent } from '../components/RichTextEditor'
 import { getTourSlug } from '../utils/tourSlug'
+import BackButton from '../components/BackButton'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:4000'
 
@@ -81,34 +82,7 @@ export default function Tour(){
 
   return (
     <div className="tour-page">
-      <div style={{padding:'16px'}}>
-        <button className="back" onClick={() => nav('/')} style={{
-          background: '#3f51b5',
-          border: 'none',
-          borderRadius: '50%',
-          width: '44px',
-          height: '44px',
-          minWidth: '44px',
-          minHeight: '44px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: '20px',
-          cursor: 'pointer',
-          color: '#fff',
-          transition: 'all 200ms',
-          touchAction: 'manipulation'
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.background = '#2d3a8c'
-          e.currentTarget.style.transform = 'scale(1.1)'
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.background = '#3f51b5'
-          e.currentTarget.style.transform = 'scale(1)'
-        }}
-        >←</button>
-      </div>
+      <div className="subpage-container__back"><BackButton onClick={() => nav('/')} /></div>
 
       <div className="tour-hero" style={{backgroundImage:`url(${tour.img})`}}>
         <div className="hero-overlay">

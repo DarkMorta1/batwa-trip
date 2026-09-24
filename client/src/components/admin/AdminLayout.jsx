@@ -5,6 +5,7 @@ import '../../styles/admin.css'
 const menuItems = [
   { path: '/admin/tours', label: 'Tours', icon: '🗺️' },
   { path: '/admin/blogs', label: 'Blogs', icon: '📝' },
+  { path: '/admin/about', label: 'About Us', icon: '👥' },
   // { path: '/admin/reviews', label: 'Reviews', icon: '⭐' },
   // { path: '/admin/vouchers', label: 'Offers & Coupons', icon: '🎫' },
   { path: '/admin/banner', label: 'Banner Settings', icon: '🎬' },
