@@ -4,6 +4,14 @@ import { contactMethods, socialLinks } from '../constants/contact'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:4000'
 
+const popularTreks = [
+  'Annapurna Base Camp & Circuit',
+  'Bhairav Kunda Sacred Alpine Lake',
+  'Ama Yangri Peak & Helambu Ridge',
+  'Langtang Valley & Gosaikunda',
+  'Everest High Passes Expedition',
+]
+
 export default function Footer() {
   const [settings, setSettings] = useState(null)
 
@@ -20,6 +28,7 @@ export default function Footer() {
     { ...contactMethods[2], value: settings?.address || contactMethods[2].value, href: settings?.googleMapsUrl || contactMethods[2].href },
     contactMethods[3]
   ]
+
   const configuredSocials = socialLinks.map(social => {
     const configuredUrl = settings?.socialLinks?.[social.name.toLowerCase()]
     if (configuredUrl) return { ...social, url: configuredUrl }
@@ -29,13 +38,17 @@ export default function Footer() {
     return social
   })
 
+  const supportContact = configuredContact.slice(0, 3)
+
   return (
     <footer className="site-footer">
       <div className="site-footer__inner">
         <div className="site-footer__brand">
-          <img src="/images/logo.jpg" alt="Batuwa Trip" className="site-footer__logo" />
           <h2>Batuwa Trip</h2>
-          <p>Thoughtful journeys through Nepal, shaped by local insight.</p>
+          <p>
+            Pioneering domestic exploration and Himalayan wilderness across Nepal. From legendary alpine
+            passes to untouched cultural trails, we craft safe, memorable, and respectful eco-adventures.
+          </p>
           <div className="site-footer__socials">
             {configuredSocials.map(social => (
               <a key={social.name} href={social.url} target="_blank" rel="noopener noreferrer" aria-label={social.name}>
@@ -45,26 +58,45 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="site-footer__links">
-          <h3>Explore</h3>
-          <Link to="/">Home</Link>
-          <Link to="/gallery">Gallery</Link>
-          <Link to="/blogs">Blogs</Link>
-          <Link to="/about">About Us</Link>
-          <Link to="/contact">Contact</Link>
+        <div className="site-footer__column site-footer__links">
+          <h3>Popular Himalayan Treks</h3>
+          <ul className="site-footer__list">
+            {popularTreks.map((trek) => (
+              <li key={trek}>
+                <Link to="/trips/all">{trek}</Link>
+              </li>
+            ))}
+          </ul>
         </div>
 
-        <div className="site-footer__contact">
-          <h3>Contact</h3>
-          {configuredContact.map(method => (
-            <a key={method.label} href={method.href}>
-              <span aria-hidden>{method.icon}</span>
-              <span><strong>{method.label}</strong>{method.value}</span>
-            </a>
-          ))}
+        <div className="site-footer__column site-footer__contact">
+          <h3>Support &amp; Hub</h3>
+          <div className="site-footer__contact-list">
+            {supportContact.map(method => (
+              <div key={method.label} className="site-footer__contact-row">
+                <span className="site-footer__contact-icon" aria-hidden>{method.icon}</span>
+                <span className="site-footer__contact-copy">
+                  <strong>{method.label}</strong>
+                  <span>{method.value}</span>
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="site-footer__column site-footer__newsletter-wrap">
+          <h3>Trail Dispatch</h3>
+          <div className="site-footer__newsletter-box">
+            <span className="site-footer__newsletter-label">Subscribe for seasonal departure dates, permits advice, and domestic trail deals.</span>
+            <form className="site-footer__newsletter" onSubmit={(event) => event.preventDefault()}>
+              <input type="email" placeholder="Enter your email" aria-label="Enter your email" />
+              <button type="submit" aria-label="Subscribe">→</button>
+            </form>
+          </div>
         </div>
       </div>
-      <div className="site-footer__bottom">© {new Date().getFullYear()} Batuwa Trip. All rights reserved.</div>
+
+      <div className="site-footer__bottom">© {new Date().getFullYear()} Batuwa Trip Pvt. Ltd. Promoting Domestic Tourism &amp; Himalayan Trails in Nepal. All rights reserved.</div>
     </footer>
   )
 }

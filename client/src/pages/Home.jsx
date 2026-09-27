@@ -117,11 +117,14 @@ export default function Home() {
     <div className="home-page">
       <Banner />
 
-      <section id="trips" className="section">
-        <h2 className="section__title section__title--strong">Trips</h2>
-        <div style={{margin:'8px 0 16px', textAlign:'right'}}>
+      <section id="trips" className="section section--trips">
+        <div className="section__heading trips-header">
+          <div className="trips-header__title-wrap">
+            <span className="trips-header__dot" aria-hidden="true" />
+            <h2 className="section__title section__title--strong">Trips</h2>
+          </div>
           <a
-            className="btn btn--pink"
+            className="btn btn--pink trips-header__cta"
             href={buildWhatsAppLink('Hi, I would like to customize a trip.')}
             target="_blank"
             rel="noopener noreferrer"
@@ -130,150 +133,147 @@ export default function Home() {
             Customize Trip
           </a>
         </div>
+        <p className="trips-header__subtitle">Choose from authentic weekend getaways, cultural jeep safaris, or bucket-list Himalayan passes led by virtual local trail marshals.</p>
         {visibleTrips.length === 0 ? (
           <div style={{ padding: '40px', textAlign: 'center', color: 'rgba(255,255,255,0.7)' }}>
             <p>Loading.... Please Wait</p>
           </div>
         ) : (
-          <div className="grid grid--cards">
+          <div className="grid grid--cards trips-grid">
             {visibleTrips.map(t => (
               <TravelCard key={t.id} tour={t} />
             ))}
           </div>
         )}
         {trips.length > 3 && (
-          <div style={{textAlign:'center', marginTop:16}}>
-            <button className="btn" onClick={()=>{ nav('/trips/all') }}>
+          <div className="trips-see-more-wrap">
+            <button className="btn btn--secondary trips-see-more" onClick={()=>{ nav('/trips/all') }}>
               See More
             </button>
           </div>
         )}
       </section>
 
-
-     
-       <section className="section section--tight">
-        <div className="section__heading">
-          <div>
-            <h2 className="section__title section__title--pink">Latest Blogs</h2>
-            <span className="section__subtitle">Stories from our travelers</span>
+      <section className="section section--tight latest-blogs">
+        <div className="latest-blogs__header">
+          <div className="latest-blogs__heading">
+            <h2 className="latest-blogs__title">Latest Blogs</h2>
+            <span className="latest-blogs__subtitle">Stories From Our Travelers</span>
           </div>
-          <div className="pager">
-            <button className="pager__btn" onClick={() => nav('/blogs')}>All</button>
-          </div>
+          <button className="latest-blogs__all" onClick={() => nav('/blogs')}>All</button>
         </div>
 
         {latestBlogs.length === 0 ? (
           <div style={{ padding: '40px', textAlign: 'center', color: 'rgba(255,255,255,0.7)' }}>
             <p>No blogs available yet. Check back soon!</p>
           </div>
-        ) : (
-          <div style={{ position: 'relative', width: '100%', maxWidth: '600px', margin: '0 auto' }}>
-            {/* Simple Blog Card Carousel - Show one card at a time */}
-            <div style={{ position: 'relative', width: '100%' }}>
-              <article 
-                key={latestBlogs[currentBlogIndex]?.id}
-                className="mini-blog" 
-                onClick={() => nav(`/blog/${latestBlogs[currentBlogIndex]?.slug || getBlogSlug(latestBlogs[currentBlogIndex]?.title)}`)}
-                style={{ 
-                  cursor: 'pointer',
-                  background: '#fff',
-                  borderRadius: '12px',
-                  overflow: 'hidden',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                  transition: 'opacity 0.3s ease-in-out'
-                }}
-              >
-                <img 
-                  src={latestBlogs[currentBlogIndex]?.thumb?.startsWith('http') ? latestBlogs[currentBlogIndex]?.thumb : (latestBlogs[currentBlogIndex]?.thumb?.startsWith('/') ? latestBlogs[currentBlogIndex]?.thumb : `/images/${latestBlogs[currentBlogIndex]?.thumb || 'placeholder.jpg'}`)} 
-                  alt={latestBlogs[currentBlogIndex]?.title}
-                  style={{ width: '100%', height: '200px', objectFit: 'cover' }}
-                  onError={(e) => {
-                    e.target.src = '/images/placeholder.jpg'
-                  }}
-                />
-                <div style={{ padding: '16px' }}>
-                  <h3 style={{margin: '8px 0 4px', fontSize: 15, fontWeight: 'bold'}}>{latestBlogs[currentBlogIndex]?.title}</h3>
-                  <p className="muted" style={{fontSize:13, margin:0, lineHeight: '1.4'}}>{latestBlogs[currentBlogIndex]?.excerpt}</p>
-                  <p className="meta" style={{marginTop:8, fontSize: '12px', color: '#999'}}>{latestBlogs[currentBlogIndex]?.date} • {latestBlogs[currentBlogIndex]?.author}</p>
-                </div>
-              </article>
+        ) : (() => {
+          const featuredBlog = latestBlogs[currentBlogIndex] || latestBlogs[0]
+          const secondaryBlogs = latestBlogs.filter((blog, index) => index !== currentBlogIndex).slice(0, 2)
+          const blogImage = (blog) => blog?.thumb
+            ? (blog.thumb.startsWith('http') ? blog.thumb : (blog.thumb.startsWith('/') ? blog.thumb : `/images/${blog.thumb}`))
+            : '/images/placeholder.jpg'
+          const readTime = (blog) => {
+            const wordCount = (blog?.excerpt || '').split(/\s+/).filter(Boolean).length || 120
+            return Math.max(3, Math.ceil(wordCount / 150))
+          }
 
-              {/* Navigation Buttons */}
-              {latestBlogs.length > 1 && (
-                <>
+          return (
+            <>
+              <div className="latest-blogs__layout">
+                <article
+                  className="latest-blogs__featured"
+                  onClick={() => nav(`/blog/${featuredBlog?.slug || getBlogSlug(featuredBlog?.title)}`)}
+                  aria-label={`Open featured blog: ${featuredBlog?.title}`}
+                >
+                  <div className="latest-blogs__featured-topbar">
+                    <div className="latest-blogs__brandmark">b</div>
+                    <div className="latest-blogs__brand-copy">
+                      <div className="latest-blogs__brand-name">Batuwa Trip</div>
+                      <div className="latest-blogs__brand-slogan">"BE A PART • A FEW TRAIL"</div>
+                    </div>
+                  </div>
+                  <div className="latest-blogs__featured-image-wrap">
+                    <img
+                      src={blogImage(featuredBlog)}
+                      alt={featuredBlog?.title}
+                      onError={(e) => {
+                        e.target.src = '/images/placeholder.jpg'
+                      }}
+                    />
+                    <div className="latest-blogs__featured-badge">TRAVEL</div>
+                    <div className="latest-blogs__featured-overlay-title">TRAVEL WITH BATUWA</div>
+                  </div>
+                  <div className="latest-blogs__featured-body">
+                    <h3>{featuredBlog?.title}</h3>
+                    <div className="latest-blogs__meta-row">
+                      <span className="latest-blogs__tag">{featuredBlog?.category || 'Travel Story'}</span>
+                      <span>{featuredBlog?.date}</span>
+                      <span>•</span>
+                      <span>{readTime(featuredBlog)} min read</span>
+                    </div>
+                    <p>{featuredBlog?.excerpt}</p>
+                  </div>
+                </article>
+
+                <div className="latest-blogs__rail">
+                  {secondaryBlogs.map((blog) => (
+                    <article
+                      key={blog.id || blog._id || blog.title}
+                      className="latest-blogs__rail-item"
+                      onClick={() => nav(`/blog/${blog?.slug || getBlogSlug(blog?.title)}`)}
+                      aria-label={`Open blog: ${blog?.title}`}
+                    >
+                      <img
+                        src={blogImage(blog)}
+                        alt={blog?.title}
+                        onError={(e) => {
+                          e.target.src = '/images/placeholder.jpg'
+                        }}
+                      />
+                      <div className="latest-blogs__rail-copy">
+                        <div className="latest-blogs__tag latest-blogs__tag--small">{blog?.category || 'Travel Story'}</div>
+                        <h3>{blog?.title}</h3>
+                        <div className="latest-blogs__meta-row latest-blogs__meta-row--small">
+                          <span>{blog?.date}</span>
+                        </div>
+                        <p>{blog?.excerpt}</p>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </div>
+
+              {false && latestBlogs.length > 1 && (
+                <div className="latest-blogs__nav" aria-label="Blog navigation">
                   <button
+                    type="button"
+                    className="latest-blogs__nav-btn"
                     onClick={(e) => {
                       e.stopPropagation()
                       prevBlog()
                     }}
-                    style={{
-                      position: 'absolute',
-                      left: '10px',
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                      background: 'rgba(0, 0, 0, 0.6)',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '50%',
-                      width: '44px',
-                      height: '44px',
-                      minWidth: '44px',
-                      minHeight: '44px',
-                      fontSize: '20px',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      zIndex: 10,
-                      transition: 'background 0.2s',
-                      touchAction: 'manipulation'
-                    }}
-                    onMouseEnter={(e) => e.target.style.background = 'rgba(0, 0, 0, 0.8)'}
-                    onMouseLeave={(e) => e.target.style.background = 'rgba(0, 0, 0, 0.6)'}
                     aria-label="Previous blog"
                   >
                     ‹
                   </button>
                   <button
+                    type="button"
+                    className="latest-blogs__nav-btn"
                     onClick={(e) => {
                       e.stopPropagation()
                       nextBlog()
                     }}
-                    style={{
-                      position: 'absolute',
-                      right: '10px',
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                      background: 'rgba(0, 0, 0, 0.6)',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '50%',
-                      width: '44px',
-                      height: '44px',
-                      minWidth: '44px',
-                      minHeight: '44px',
-                      fontSize: '20px',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      zIndex: 10,
-                      transition: 'background 0.2s',
-                      touchAction: 'manipulation'
-                    }}
-                    onMouseEnter={(e) => e.target.style.background = 'rgba(0, 0, 0, 0.8)'}
-                    onMouseLeave={(e) => e.target.style.background = 'rgba(0, 0, 0, 0.6)'}
                     aria-label="Next blog"
                   >
                     ›
                   </button>
-                </>
+                </div>
               )}
-            </div>
-          </div>
-        )}
-      </section> 
+            </>
+          )
+        })()}
+      </section>
  {/* Review KO FORM 
       <section className="section">
         <div className="section__heading">
