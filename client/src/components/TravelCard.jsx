@@ -2,12 +2,14 @@ import React, { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { buildWhatsAppLink } from '../constants/whatsapp'
 import { getTourSlug } from '../utils/tourSlug'
+import { sanitizeRichText } from './RichTextEditor'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:4000'
 
-export default function TravelCard({ tour }) {
+export default function TravelCard({ tour, variant }) {
   const nav = useNavigate()
   const [copied, setCopied] = useState(false)
+  const tripDescription = variant === 'trips' && tour.desc ? sanitizeRichText(tour.desc) : ''
 
   const shareTour = useCallback(async () => {
     const url = `${window.location.origin}/tour/${getTourSlug(tour.title)}`
@@ -37,8 +39,8 @@ export default function TravelCard({ tour }) {
   const customizeMessage = `Hi, I would like to customize a trip.${tour.title ? ` Package: ${tour.title}.` : ''}${tour.location ? ` Destination: ${tour.location}.` : ''}${tour.days ? ` Duration: ${tour.days} days.` : ''}`
 
   return (
-    <article className="trend-card">
-      <div className="trend-card__media">
+    <article className={`trend-card${variant ? ` trend-card--${variant}` : ''}`}>
+      <div className={`trend-card__media${variant === 'trips' ? ' trend-card__media--trips-all' : ''}`}>
         <img 
           src={
             tour.img?.startsWith('http') 
@@ -60,6 +62,40 @@ export default function TravelCard({ tour }) {
       </div>
       <div className="trend-card__body">
         <h3 className="trend-card__title">{tour.title}</h3>
+        {variant === 'trips' && tripDescription && (
+          <div
+            className="trend-card__description"
+            dangerouslySetInnerHTML={{ __html: tripDescription }}
+          />
+        )}
+        {variant === 'trips' && (
+          <div className="trend-card__info" aria-label="Trip information">
+            {tour.location && (
+              <span className="trend-card__info-item">
+                <span className="trend-card__info-icon trend-card__info-icon--location" aria-hidden="true" />
+                <span>{tour.location}</span>
+              </span>
+            )}
+            {tour.days && (
+              <span className="trend-card__info-item">
+                <span className="trend-card__info-icon trend-card__info-icon--duration" aria-hidden="true" />
+                <span>{tour.days} days</span>
+              </span>
+            )}
+            {tour.difficulty && (
+              <span className="trend-card__info-item">
+                <span className="trend-card__info-icon trend-card__info-icon--difficulty" aria-hidden="true" />
+                <span>Difficulty: {tour.difficulty}</span>
+              </span>
+            )}
+            {/* {tour.status && (
+              <span className="trend-card__info-item trend-card__info-item--status">
+                <span className="trend-card__info-icon trend-card__info-icon--status" aria-hidden="true" />
+                <span>{tour.status.charAt(0).toUpperCase() + tour.status.slice(1)}</span>
+              </span>
+            )} */}
+          </div>
+        )}
         <p className="trend-card__meta">
           {tour.days} Days • {tour.location}
           {tour.difficulty && (

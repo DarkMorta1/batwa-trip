@@ -7,6 +7,21 @@ import RichTextEditor, { hasRichTextContent } from '../../components/RichTextEdi
 import { useToast } from '../../hooks/useToast'
 import { apiRequest, API, authHeaders } from '../../utils/api'
 
+const DESCRIPTION_WORD_LIMIT = 50
+
+function countDescriptionWords(value = '') {
+  if (!value) return 0
+
+  const text = new DOMParser()
+    .parseFromString(String(value), 'text/html')
+    .body
+    .textContent
+    .replace(/\s+/g, ' ')
+    .trim()
+
+  return text ? text.split(' ').length : 0
+}
+
 export default function ToursPage() {
   const { toasts, showToast, removeToast } = useToast()
   const [tours, setTours] = useState([])
@@ -236,6 +251,11 @@ export default function ToursPage() {
         showToast('Please fill required fields (Title, Image, Description, Location)', 'error')
         return
       }
+
+      if (countDescriptionWords(formData.desc) > DESCRIPTION_WORD_LIMIT) {
+        showToast(`Description must be ${DESCRIPTION_WORD_LIMIT} words or fewer.`, 'error')
+        return
+      }
       
       // Validate itinerary - ensure all days have required fields
       const invalidDays = formData.itinerary.filter(day => !day.title || !day.description)
@@ -459,6 +479,7 @@ function moveItineraryDay(index, direction) {
     )
   }
 
+  const descriptionWordCount = countDescriptionWords(formData.desc)
   const filteredTours = statusFilter === 'all' ? tours : tours.filter(t => t.status === statusFilter)
 
   return (
@@ -741,11 +762,22 @@ function moveItineraryDay(index, direction) {
 
             <div className="admin-form-group">
               <label className="admin-label">Description *</label>
+              <p style={{ margin: '-4px 0 8px', color: '#6b7280', fontSize: '12px' }}>
+                Short summary shown on trip cards. Maximum {DESCRIPTION_WORD_LIMIT} words.
+              </p>
               <RichTextEditor
                 value={formData.desc}
                 onChange={value => setFormData({ ...formData, desc: value })}
                 placeholder="Write the tour description with headings, lists, links, and styling..."
               />
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', marginTop: '6px', fontSize: '12px' }}>
+                <span style={{ color: descriptionWordCount > DESCRIPTION_WORD_LIMIT ? '#b91c1c' : '#6b7280' }}>
+                  {descriptionWordCount} / {DESCRIPTION_WORD_LIMIT} words
+                </span>
+                {descriptionWordCount > DESCRIPTION_WORD_LIMIT && (
+                  <span style={{ color: '#b91c1c' }}>Description must be {DESCRIPTION_WORD_LIMIT} words or fewer.</span>
+                )}
+              </div>
             </div>
 
             <div className="admin-form-group">

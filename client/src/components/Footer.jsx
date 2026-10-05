@@ -85,15 +85,22 @@ export default function Footer() {
         </div>
 
         <div className="site-footer__column site-footer__newsletter-wrap">
-          <h3>Trail Dispatch</h3>
-          <div className="site-footer__newsletter-box">
-            <span className="site-footer__newsletter-label">Subscribe for seasonal departure dates, permits advice, and domestic trail deals.</span>
-            <form className="site-footer__newsletter" onSubmit={(event) => event.preventDefault()}>
-              <input type="email" placeholder="Enter your email" aria-label="Enter your email" />
-              <button type="submit" aria-label="Subscribe">→</button>
-            </form>
-          </div>
-        </div>
+  <h3>Suggestions For Us?</h3>
+
+  <div className="site-footer__newsletter-box">
+    <span className="site-footer__newsletter-label">
+      Your feedback helps us improve! Feel free to share your thoughts and ideas.
+    </span>
+
+    <a
+      className="site-footer__newsletter"
+      href="mailto:batuwatrip@gmail.com"
+      aria-label="Contact us by email"
+    >
+      Contact Us
+    </a>
+  </div>
+</div>
       </div>
 
       <div className="site-footer__bottom">© {new Date().getFullYear()} Batuwa Trip Pvt. Ltd. Promoting Domestic Tourism &amp; Himalayan Trails in Nepal. All rights reserved.</div>

@@ -61,9 +61,9 @@ export default function TripsPage(){
           No trips match your search.
         </div>
       ) : (
-        <div className="grid grid--cards">
+        <div className="grid grid--cards trips-all-grid">
           {filtered.map(tour => (
-            <TravelCard key={tour.id} tour={tour} />
+            <TravelCard key={tour.id} tour={tour} variant="trips" />
           ))}
         </div>
       )}

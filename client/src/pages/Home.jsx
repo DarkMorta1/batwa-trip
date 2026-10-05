@@ -17,14 +17,55 @@ const memoryPhotos = [
   '/images/1765290625980.jpg',
 ]
 
+const HOME_REVIEWS = [
+  {
+    name: 'FARZANA KHAN',
+    initials: 'FK',
+    location: 'Kathmandu, Nepal',
+    trip: 'Mohini Jharna hike',
+    message: 'I did the Mohini Jharna hike yesterday with Batuwa. The two guides were very friendly and supportive and the group was very nice . The hike itself was scenic and everything was organized well . Thank you Batuwa.',
+  },
+  {
+    name: 'Aarakshya Pokharel',
+    initials: 'AP',
+    location: 'Kathmandu, Nepal',
+    trip: 'DHORPATAN TREK',
+    message: 'Had a great trip to Dhorpatan with Batuwa. Everything was well managed, and the overall experience was really good. A big thank you to our guide, Denji Dai, who was friendly, helpful, and always there whenever anyone needed anything. He made sure everyone was comfortable and enjoying the trip. Thanks to the whole Batuwa team for making it such a memorable experience. Looking forward to joining another trip soon!',
+  },
+  {
+    name: 'Bishnu Gurung',
+    initials: 'BG',
+    location: 'Kathmandu, Nepal',
+    trip: 'Langtang Valley Trek',
+    message: 'I had an amazing experience with Batuwa Trip. Everything was well organized, the team was friendly and supportive, and the trip was fun from start to finish. Highly recommended for anyone who loves traveling and making great memories.Thank you, Batuwa Trip, for such a wonderful experience. The itinerary was well planned, the guides were helpful, Looking forward to joining more …❤️🥰',
+  },
+]
+
+function ReviewContent({ review, featured = false }) {
+  return (
+    <>
+      <div className="home-review-card__reviewer">
+        <span className="home-review-card__avatar" aria-hidden="true">{review.initials}</span>
+        <div>
+          <h3>{review.name}</h3>
+          <span className="home-review-card__verified">✓ Verified Trail Review</span>
+        </div>
+      </div>
+      <div className="home-review-card__meta">
+        <span>{review.location}</span>
+        <span aria-hidden="true">·</span>
+        <span>{review.trip}</span>
+      </div>
+      <div className="home-review-card__stars" aria-label="5 out of 5 stars">★★★★★</div>
+      <blockquote>{review.message}</blockquote>
+      <div className="home-review-card__trip">{featured ? 'Featured journey' : review.trip}</div>
+    </>
+  )
+}
+
 export default function Home() {
   const [tours, setTours] = useState([])
   const [blogs, setBlogs] = useState([])
-  const [reviews, setReviews] = useState([])
-  const [showReviewForm, setShowReviewForm] = useState(false)
-  const [reviewForm, setReviewForm] = useState({ author:'', rating:5, message:'' })
-  const [reviewMessage, setReviewMessage] = useState('')
-  const [showAllReviews, setShowAllReviews] = useState(false)
   const [currentBlogIndex, setCurrentBlogIndex] = useState(0)
   useEffect(() => {
     // Fetch tours in display order (uses display-settings endpoint)
@@ -77,26 +118,6 @@ export default function Home() {
         setBlogs([])
       })
     
-    // Fetch approved reviews only - backend filters this automatically for public routes
-    fetch(`${API}/api/reviews?approved=true`)
-      .then(r => {
-        if (!r.ok) {
-          console.error('Failed to fetch reviews:', r.status)
-          throw new Error(`Failed to fetch reviews: ${r.status}`)
-        }
-        return r.json()
-      })
-      .then(data => {
-        console.log('Fetched reviews from backend:', data.length, 'reviews')
-        // Backend already filters to approved and not hidden, but double-check
-        const visibleReviews = data.filter(r => r.approved && !r.hidden)
-        console.log('Visible reviews:', visibleReviews.length)
-        setReviews(visibleReviews)
-      })
-      .catch((error) => {
-        console.error('Error fetching reviews:', error)
-        console.warn('Reviews could not be loaded')
-      })
   }, [])
 
   // Filter only published tours with flags
@@ -348,52 +369,36 @@ export default function Home() {
         </div>
       </section> */}
 
-      {/* New review */}
-      <section className="section">
-  <div className="section__heading">
-    <div>
-      <h2 className="section__title section__title--pink">Send us your valuable feedback</h2>
-      <span className="section__subtitle">Share your experience — we read every message</span>
-    </div>
-  </div>
-  <br></br>
-  <div className="review-section-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, alignItems: 'start' }}>
-    {/* Feedback button card */}
-    <div style={{ background: '#fff', padding: 20, borderRadius: 12, boxShadow: '0 12px 30px rgba(2,6,23,0.2)' }}>
-      <p style={{ margin: 0, color: '#666', fontSize: 14 }}>We'd love to hear from you</p>
+      <section className="section home-reviews" aria-labelledby="home-reviews-title">
+        <div className="home-reviews__heading">
+          <div>
+            <span className="home-reviews__eyebrow">Stories from the trail</span>
+            <h2 id="home-reviews-title" className="home-reviews__title">Loved by travelers</h2>
+            <p className="home-reviews__subtitle">Real moments from guests who explored Nepal with Batuwa Trip.</p>
+          </div>
+          <a
+            className="home-reviews__google-link"
+            href="https://www.google.com/maps/place/Batuwa+Trip/@27.6902412,85.3184684,17z/data=!4m8!3m7!1s0x39eb1975c1914f29:0x109032dfd4792095!8m2!3d27.6902365!4d85.3210433!9m1!1b1!16s%2Fg%2F11j8xh15bp?entry=ttu&g_ep=EgoyMDI1MTIwOS4wIKXMDSoASAFQAw%3D%3D"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Read all reviews
+          </a>
+        </div>
 
-      {/* "Review Us" Button */}
-      <div style={{ marginTop: 16 }}>
-        <a
-          href="https://www.google.com/maps/place/Batuwa+Trip/@27.6902412,85.3184684,17z/data=!4m8!3m7!1s0x39eb1975c1914f29:0x109032dfd4792095!8m2!3d27.6902365!4d85.3210433!9m1!1b1!16s%2Fg%2F11j8xh15bp?entry=ttu&g_ep=EgoyMDI1MTIwOS4wIKXMDSoASAFQAw%3D%3D"  // Replace this with the actual Google review link for your company
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            display: 'inline-block',
-            padding: '12px 24px',
-            backgroundColor: '#ff5a5f', // Button color (you can change this)
-            color: '#fff',
-            fontWeight: '700',
-            fontSize: '16px',
-            borderRadius: '8px',
-            textAlign: 'center',
-            textDecoration: 'none',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-            transition: 'background-color 0.3s, transform 0.2s',
-            width: 'auto',
-            cursor: 'pointer',
-          }}
-          onMouseEnter={(e) => e.target.style.backgroundColor = '#e2494f'} // Darker color on hover
-          onMouseLeave={(e) => e.target.style.backgroundColor = '#ff5a5f'} // Original color on mouse leave
-          onClick={() => window.location.href = "https://www.google.com/maps/place/Batuwa+Trip/@27.6902412,85.3184684,17z/data=!4m8!3m7!1s0x39eb1975c1914f29:0x109032dfd4792095!8m2!3d27.6902365!4d85.3210433!9m1!1b1!16s%2Fg%2F11j8xh15bp?entry=ttu&g_ep=EgoyMDI1MTIwOS4wIKXMDSoASAFQAw%3D%3D"}  // Ensure it's a Google Review link
-        >
-          Review Us
-        </a>
-      </div>
-    </div>
-
-  </div>
-</section>
+        <div className="home-reviews__stage">
+          <article className="home-review-card home-review-card--side home-review-card--left">
+            <ReviewContent review={HOME_REVIEWS[1]} />
+          </article>
+          <article className="home-review-card home-review-card--featured">
+            <div className="home-review-card__story">Stories</div>
+            <ReviewContent review={HOME_REVIEWS[0]} featured />
+          </article>
+          <article className="home-review-card home-review-card--side home-review-card--right">
+            <ReviewContent review={HOME_REVIEWS[2]} />
+          </article>
+        </div>
+      </section>
       <Footer />
     </div>
   )
