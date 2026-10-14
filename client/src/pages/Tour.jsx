@@ -62,7 +62,8 @@ export default function Tour(){
         .map((section, index) => ({
           id: section?.id || `legacy-section-${index}`,
           title: typeof section?.title === 'string' ? section.title.trim() : '',
-          content: typeof section?.content === 'string' ? section.content : ''
+          content: typeof section?.content === 'string' ? section.content : '',
+          displayPosition: section?.displayPosition === 'below-description' ? 'below-description' : 'below-images'
         }))
         .filter(section => section.title || section.content)
         .map((section, index) => ({
@@ -79,6 +80,17 @@ export default function Tour(){
   }
 
   const furtherInfoSections = normalizeFurtherInfoSections(tour.details?.furtherInfo)
+  const belowDescriptionSections = furtherInfoSections.filter(section => section.displayPosition === 'below-description')
+  const belowImagesSections = furtherInfoSections.filter(section => section.displayPosition !== 'below-description')
+
+  const renderFurtherInfoSection = (section, index) => (
+    <div key={section.id || index} style={{ marginBottom: '24px' }}>
+      {section.title && <h4 style={{ marginBottom: '12px' }}>{section.title}</h4>}
+      {hasRichTextContent(section.content) && (
+        <div className="tour-rich-text" dangerouslySetInnerHTML={{ __html: sanitizeRichText(section.content) }} />
+      )}
+    </div>
+  )
 
   return (
     <div className="tour-page">
@@ -100,6 +112,12 @@ export default function Tour(){
         <div className="left">
           <h2>About this tour</h2>
           <div className="tour-rich-text" dangerouslySetInnerHTML={{ __html: descriptionHtml }} />
+
+          {belowDescriptionSections.length > 0 && (
+            <div className="tour-further-info tour-further-info--below-description">
+              {belowDescriptionSections.map(renderFurtherInfoSection)}
+            </div>
+          )}
           
           {/* Day-wise Itinerary */}
           {tour.itinerary && tour.itinerary.length > 0 && (
@@ -169,17 +187,10 @@ export default function Tour(){
             <p style={{ color: '#999', fontStyle: 'italic' }}>No gallery images available</p>
           )}
 
-          {furtherInfoSections.length > 0 && (
+          {belowImagesSections.length > 0 && (
             <div className="tour-further-info">
               <h3>Further Information</h3>
-              {furtherInfoSections.map((section, index) => (
-                <div key={section.id || index} style={{ marginBottom: '24px' }}>
-                  {section.title && <h4 style={{ marginBottom: '12px' }}>{section.title}</h4>}
-                  {hasRichTextContent(section.content) && (
-                    <div className="tour-rich-text" dangerouslySetInnerHTML={{ __html: sanitizeRichText(section.content) }} />
-                  )}
-                </div>
-              ))}
+              {belowImagesSections.map(renderFurtherInfoSection)}
             </div>
           )}
         </div>
@@ -219,4 +230,3 @@ export default function Tour(){
     </div>
   )
 }
-

@@ -1,11 +1,11 @@
 const express = require('express')
 const router = express.Router()
-const { requireAdmin } = require('./middleware')
+const { requireAdmin, requireRole } = require('./middleware')
 const WebsiteSettings = require('../models/WebsiteSettings')
 const ActivityLog = require('../models/ActivityLog')
 
 // GET /api/admin/website-settings
-router.get('/', requireAdmin, async (req, res) => {
+router.get('/', requireAdmin, requireRole('super_admin'), async (req, res) => {
   try {
     const settings = await WebsiteSettings.getSettings()
     res.json(settings)
@@ -16,7 +16,7 @@ router.get('/', requireAdmin, async (req, res) => {
 })
 
 // PUT /api/admin/website-settings
-router.put('/', requireAdmin, async (req, res) => {
+router.put('/', requireAdmin, requireRole('super_admin'), async (req, res) => {
   try {
     let settings = await WebsiteSettings.findOne()
     
@@ -44,4 +44,3 @@ router.put('/', requireAdmin, async (req, res) => {
 })
 
 module.exports = router
-

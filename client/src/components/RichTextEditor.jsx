@@ -211,22 +211,7 @@ export default function RichTextEditor({ value = '', onChange, placeholder = 'Wr
         <button type="button" className="rich-text-toolbar-button" onMouseDown={(e) => e.preventDefault()} onClick={() => applyCommand('justifyCenter')} title="Align center">Center</button>
         <button type="button" className="rich-text-toolbar-button" onMouseDown={(e) => e.preventDefault()} onClick={() => applyCommand('justifyRight')} title="Align right">Right</button>
         <button type="button" className="rich-text-toolbar-button" onMouseDown={(e) => e.preventDefault()} onClick={handleLink} title="Insert link">Link</button>
-        <select className="rich-text-toolbar-select" onMouseDown={(e) => e.preventDefault()} onChange={handleFontFamilyChange} defaultValue="default" title="Font family">
-          <option value="default">Font: Default</option>
-          <option value="Arial, sans-serif">Arial</option>
-          <option value="Georgia, serif">Georgia</option>
-          <option value="'Times New Roman', serif">Times New Roman</option>
-          <option value="Verdana, sans-serif">Verdana</option>
-        </select>
-        <select className="rich-text-toolbar-select" onMouseDown={(e) => e.preventDefault()} onChange={handleFontSizeChange} defaultValue="default" title="Font size">
-          <option value="default">Size: Normal</option>
-          <option value="12px">12px</option>
-          <option value="14px">14px</option>
-          <option value="16px">16px</option>
-          <option value="18px">18px</option>
-          <option value="20px">20px</option>
-          <option value="24px">24px</option>
-        </select>
+
       </div>
 
       <div

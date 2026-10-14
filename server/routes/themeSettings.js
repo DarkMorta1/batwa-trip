@@ -1,11 +1,11 @@
 const express = require('express')
 const router = express.Router()
-const { requireAdmin } = require('./middleware')
+const { requireAdmin, requireRole } = require('./middleware')
 const ThemeSettings = require('../models/ThemeSettings')
 const ActivityLog = require('../models/ActivityLog')
 
 // GET /api/admin/theme
-router.get('/', requireAdmin, async (req, res) => {
+router.get('/', requireAdmin, requireRole('super_admin'), async (req, res) => {
   try {
     const theme = await ThemeSettings.getTheme()
     res.json(theme)
@@ -16,7 +16,7 @@ router.get('/', requireAdmin, async (req, res) => {
 })
 
 // PUT /api/admin/theme
-router.put('/', requireAdmin, async (req, res) => {
+router.put('/', requireAdmin, requireRole('super_admin'), async (req, res) => {
   try {
     let theme = await ThemeSettings.findOne()
     
@@ -44,4 +44,3 @@ router.put('/', requireAdmin, async (req, res) => {
 })
 
 module.exports = router
-

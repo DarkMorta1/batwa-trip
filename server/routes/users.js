@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { requireAdmin } = require('./middleware')
+const { requireAdmin, requireRole } = require('./middleware')
 const User = require('../models/User')
 const Booking = require('../models/Booking')
 const ActivityLog = require('../models/ActivityLog')
@@ -88,7 +88,7 @@ router.put('/:id/block', requireAdmin, async (req, res) => {
 })
 
 // PUT /api/admin/users/:id/role - Change user role
-router.put('/:id/role', requireAdmin, async (req, res) => {
+router.put('/:id/role', requireAdmin, requireRole('super_admin'), async (req, res) => {
   try {
     const { role } = req.body
     if (!['user', 'admin'].includes(role)) {
@@ -123,7 +123,7 @@ router.put('/:id/role', requireAdmin, async (req, res) => {
 })
 
 // DELETE /api/admin/users/:id
-router.delete('/:id', requireAdmin, async (req, res) => {
+router.delete('/:id', requireAdmin, requireRole('super_admin'), async (req, res) => {
   try {
     const user = await User.findById(req.params.id)
     if (!user) {
@@ -150,4 +150,3 @@ router.delete('/:id', requireAdmin, async (req, res) => {
 })
 
 module.exports = router
-

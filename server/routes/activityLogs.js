@@ -1,10 +1,10 @@
 const express = require('express')
 const router = express.Router()
-const { requireAdmin } = require('./middleware')
+const { requireAdmin, requireRole } = require('./middleware')
 const ActivityLog = require('../models/ActivityLog')
 
 // GET /api/admin/activity-logs
-router.get('/', requireAdmin, async (req, res) => {
+router.get('/', requireAdmin, requireRole('super_admin'), async (req, res) => {
   try {
     const { page = 1, limit = 50, resource, adminId } = req.query
     const query = {}
@@ -33,4 +33,3 @@ router.get('/', requireAdmin, async (req, res) => {
 })
 
 module.exports = router
-

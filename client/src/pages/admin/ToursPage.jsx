@@ -70,7 +70,8 @@ export default function ToursPage() {
     return {
       id: `section-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
       title,
-      content
+      content,
+      displayPosition: 'below-images'
     }
   }
 
@@ -82,6 +83,7 @@ export default function ToursPage() {
         id: section?.id || `section-${index}-${Date.now()}`,
         title: typeof section?.title === 'string' ? section.title.trim() : '',
         content: typeof section?.content === 'string' ? section.content : (typeof section === 'string' ? section : ''),
+        displayPosition: section?.displayPosition === 'below-description' ? 'below-description' : 'below-images',
       }))
       .filter(section => section.title || section.content)
       .map((section, index) => ({
@@ -822,6 +824,18 @@ function moveItineraryDay(index, direction) {
                           className="admin-input"
                           placeholder="Overview, Highlights, FAQs, etc."
                         />
+                      </div>
+
+                      <div style={{ marginBottom: '10px' }}>
+                        <label className="admin-label" style={{ display: 'block', marginBottom: '6px' }}>Display Position</label>
+                        <select
+                          value={section.displayPosition || 'below-images'}
+                          onChange={e => updateFurtherInfoSection(section.id, 'displayPosition', e.target.value)}
+                          className="admin-input"
+                        >
+                          <option value="below-description">Below Description</option>
+                          <option value="below-images">Below Images</option>
+                        </select>
                       </div>
 
                       <label className="admin-label" style={{ display: 'block', marginBottom: '6px' }}>Content</label>

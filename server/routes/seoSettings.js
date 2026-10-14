@@ -1,11 +1,11 @@
 const express = require('express')
 const router = express.Router()
-const { requireAdmin } = require('./middleware')
+const { requireAdmin, requireRole } = require('./middleware')
 const SEOSettings = require('../models/SEOSettings')
 const ActivityLog = require('../models/ActivityLog')
 
 // GET /api/admin/seo - Get all SEO settings
-router.get('/', requireAdmin, async (req, res) => {
+router.get('/', requireAdmin, requireRole('super_admin'), async (req, res) => {
   try {
     const settings = await SEOSettings.find().sort({ page: 1 })
     res.json(settings)
@@ -16,7 +16,7 @@ router.get('/', requireAdmin, async (req, res) => {
 })
 
 // GET /api/admin/seo/:page
-router.get('/:page', requireAdmin, async (req, res) => {
+router.get('/:page', requireAdmin, requireRole('super_admin'), async (req, res) => {
   try {
     let settings = await SEOSettings.findOne({ page: req.params.page })
     if (!settings) {
@@ -30,7 +30,7 @@ router.get('/:page', requireAdmin, async (req, res) => {
 })
 
 // PUT /api/admin/seo/:page
-router.put('/:page', requireAdmin, async (req, res) => {
+router.put('/:page', requireAdmin, requireRole('super_admin'), async (req, res) => {
   try {
     let settings = await SEOSettings.findOne({ page: req.params.page })
     
@@ -59,4 +59,3 @@ router.put('/:page', requireAdmin, async (req, res) => {
 })
 
 module.exports = router
-

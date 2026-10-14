@@ -61,36 +61,7 @@ router.post('/login', async (req, res) => {
 
 // POST /api/auth/register
 router.post('/register', async (req, res) => {
-  try {
-    const { username, email, password, fullName, role } = req.body
-
-    if (!username || !email || !password) {
-      return res.status(400).json({ message: 'Username, email, and password are required.' })
-    }
-
-    // Check if username or email already exists
-    const exists = await Admin.findOne({ $or: [{ username }, { email }] })
-    if (exists) {
-      return res.status(400).json({ message: 'Username or email already exists.' })
-    }
-
-    const passwordHash = await bcrypt.hash(password, 10)
-
-    const newAdmin = new Admin({
-      username,
-      email,
-      passwordHash,
-      fullName: fullName || '',
-      role: role || 'admin'
-    })
-
-    await newAdmin.save()
-
-    res.status(201).json({ message: 'Admin created successfully', adminId: newAdmin._id })
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ message: 'Server error' })
-  }
+  res.status(403).json({ message: 'Public admin registration is disabled.' })
 })
 
 // POST /api/auth/verify - Verify token (admin)
