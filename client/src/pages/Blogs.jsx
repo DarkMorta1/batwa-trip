@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { getBlogSlug } from '../utils/tourSlug'
 import BackButton from '../components/BackButton'
+import SEOHead from '../components/SEOHead'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:4000'
 
@@ -39,7 +40,9 @@ export default function Blogs(){
   }, [])
 
   return (
-    <div className="all-blogs-page">
+    <>
+      <SEOHead page="blogs" title="Travel Blogs | Batuwa Trip" description="Read travel stories, Nepal trekking guides, and inspiration from Batuwa Trip." />
+      <div className="all-blogs-page">
       <div className="all-blogs-heading">
         <BackButton onClick={() => nav('/')} />
         <div>
@@ -87,6 +90,7 @@ export default function Blogs(){
           })}
         </div>
       )}
-    </div>
+      </div>
+    </>
   )
 }

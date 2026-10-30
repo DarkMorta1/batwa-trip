@@ -5,7 +5,6 @@ import Tour from './pages/Tour'
 import GalleryPage from './pages/GalleryPage'
 import Blogs from './pages/Blogs'
 import BlogDetail from './pages/BlogDetail'
-import Contact from './pages/Contact'
 import About from './pages/About'
 import TripsPage from './pages/TripsPage'
 import AdminLogin from './pages/AdminLogin'
@@ -23,6 +22,7 @@ import ActivityLogsPage from './pages/admin/ActivityLogsPage'
 import AboutUsPage from './pages/admin/AboutUsPage'
 import WhatsAppButton from './components/WhatsAppButton'
 import AdminRoute from './components/AdminRoute'
+import SEOHead from './components/SEOHead'
 
 const navItems = [
   { path: '/', label: 'Home', icon: '🏠' },
@@ -42,7 +42,6 @@ function getPageTitle(pathname) {
   if (pathname === '/gallery') return 'Gallery'
   if (pathname === '/blogs' || pathname.startsWith('/blog/')) return 'Blogs'
   if (pathname === '/about') return 'About Us'
-  if (pathname === '/contact') return 'Contact'
   if (pathname.startsWith('/tour/')) return 'Trip Details'
   return ''
 }
@@ -98,11 +97,14 @@ function BottomNav() {
 export default function App() {
   const location = useLocation()
   const isAdminRoute = location.pathname.startsWith('/admin')
+  const isBlogDetailRoute = location.pathname.startsWith('/blog/')
 
   // Admin routes don't show public header/nav
   if (isAdminRoute) {
     return (
-      <Routes>
+      <>
+        <SEOHead page="admin" title="Admin | Batuwa Trip" noindex />
+        <Routes>
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<AdminRoute><ToursPage /></AdminRoute>} />
         <Route path="/admin/tours" element={<AdminRoute><ToursPage /></AdminRoute>} />
@@ -117,14 +119,15 @@ export default function App() {
         <Route path="/admin/settings" element={<AdminRoute><SettingsPage /></AdminRoute>} />
         <Route path="/admin/activity" element={<AdminRoute><ActivityLogsPage /></AdminRoute>} />
         <Route path="/admin/about" element={<AdminRoute><AboutUsPage /></AdminRoute>} />
-      </Routes>
+        </Routes>
+      </>
     )
   }
 
   // Public routes
   return (
     <div className="page">
-      {location.pathname !== '/' && (
+      {location.pathname !== '/' && !isBlogDetailRoute && (
         <header className="logo-bar">
           <div className="page-header-title">{getPageTitle(location.pathname)}</div>
         </header>
@@ -138,13 +141,23 @@ export default function App() {
           <Route path="/gallery" element={<GalleryPage />} />
           <Route path="/blogs" element={<Blogs />} />
           <Route path="/blog/:slug" element={<BlogDetail />} />
-          <Route path="/contact" element={<Contact />} />
           <Route path="/about" element={<About />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
 
       <BottomNav />
       <WhatsAppButton />
+    </div>
+  )
+}
+
+function NotFound() {
+  return (
+    <div style={{ padding: 40, color: '#fff', textAlign: 'center' }}>
+      <h1>Page not found</h1>
+      <p>The page you requested does not exist.</p>
+      <Link to="/">Return to Batuwa Trip</Link>
     </div>
   )
 }

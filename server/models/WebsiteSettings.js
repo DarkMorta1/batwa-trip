@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
 const WebsiteSettingsSchema = new mongoose.Schema({
-  siteName: { type: String, default: 'Batwa Travels' },
+  siteName: { type: String, default: 'Batuwa Trip' },
   siteTagline: { type: String, default: '' },
   contactEmail: { type: String, default: '' },
   contactPhone: { type: String, default: '' },
@@ -28,9 +28,11 @@ WebsiteSettingsSchema.statics.getSettings = async function() {
   let settings = await this.findOne()
   if (!settings) {
     settings = await this.create({})
+  } else if (['Batwa Travels', 'Batuwa Travel', 'Batuwa Travels', 'batuwa travel'].includes(settings.siteName)) {
+    settings.siteName = 'Batuwa Trip'
+    await settings.save()
   }
   return settings
 }
 
 module.exports = mongoose.model('WebsiteSettings', WebsiteSettingsSchema)
-

@@ -14,6 +14,7 @@ const BlogSchema = new mongoose.Schema({
   slug: { type: String, unique: true, sparse: true },
   excerpt: { type: String, default: '' },
   thumb: { type: String, default: '' },
+  articleImages: { type: [String], default: [] },
   date: { type: String, default: '' },
   author: { type: String, default: '' },
   content: { type: String, default: '' }

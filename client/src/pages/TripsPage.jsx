@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import TravelCard from '../components/TravelCard'
 import BackButton from '../components/BackButton'
+import SEOHead from '../components/SEOHead'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:4000'
 
@@ -40,7 +41,9 @@ export default function TripsPage(){
   const title = section === 'upcoming' ? 'Upcoming Trips' : (section === 'available' ? 'Available Trips' : 'Trips')
 
   return (
-    <div style={{ padding: 16 }}>
+    <>
+      <SEOHead page="trips" title={`${title} | Batuwa Trip`} description={`Explore ${title.toLowerCase()} and discover your next Nepal adventure with Batuwa Trip.`} />
+      <div style={{ padding: 16 }}>
       <div style={{ marginBottom: 12 }}>
         <BackButton onClick={() => nav(-1)} />
       </div>
@@ -67,6 +70,7 @@ export default function TripsPage(){
           ))}
         </div>
       )}
-    </div>
+      </div>
+    </>
   )
 }

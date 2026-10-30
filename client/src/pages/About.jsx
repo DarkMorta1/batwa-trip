@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { sanitizeRichText, hasRichTextContent } from '../components/RichTextEditor'
 import BackButton from '../components/BackButton'
+import SEOHead from '../components/SEOHead'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:4000'
 const activityNames = ['Hiking', 'Trekking', 'Camping', 'Jeep Tours']
@@ -37,7 +38,9 @@ export default function About() {
   const activities = activityNames.filter(activity => activitySource.includes(activity.toLowerCase()))
 
   return (
-    <div className="about-page">
+    <>
+      <SEOHead page="about" title="About Batuwa Trip" description="Learn about Batuwa Trip, a Nepal travel company creating safe and memorable Himalayan adventures." />
+      <div className="about-page">
       <header className="logo-bar about-page__topbar" aria-label="About page navigation">
         <div className="page-header-title">About Us</div>
         <div className="about-page__back-wrap">
@@ -94,6 +97,7 @@ export default function About() {
           </section>
         </>
       )}
-    </div>
+      </div>
+    </>
   )
 }

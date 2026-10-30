@@ -58,7 +58,7 @@ export default function Banner() {
         className="hero__image"
         style={{ backgroundImage: `url(${currentImage.startsWith('http') ? currentImage : (currentImage.startsWith('/') ? currentImage : `/images/${currentImage}`)})` }}
       >
-        <img src="/images/logo.jpg" alt="Batuwa Travels" className="hero__logo" />
+        <img src="/images/logo.jpg" alt="Batuwa Trip" className="hero__logo" />
         <div className="hero__overlay">
           <div className="hero__brand">
             <p className="hero__eyebrow">{bannerData.eyebrow}</p>

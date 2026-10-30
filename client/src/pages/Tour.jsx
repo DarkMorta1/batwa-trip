@@ -4,6 +4,7 @@ import Gallery from '../components/Gallery'
 import { sanitizeRichText, hasRichTextContent } from '../components/RichTextEditor'
 import { getTourSlug } from '../utils/tourSlug'
 import BackButton from '../components/BackButton'
+import SEOHead from '../components/SEOHead'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:4000'
 
@@ -93,7 +94,9 @@ export default function Tour(){
   )
 
   return (
-    <div className="tour-page">
+    <>
+      <SEOHead page={`tour-${slug}`} title={`${tour.title} | Batuwa Trip`} description={tour.desc} image={tour.img} />
+      <div className="tour-page">
       <div className="subpage-container__back"><BackButton onClick={() => nav('/')} /></div>
 
       <div className="tour-hero" style={{backgroundImage:`url(${tour.img})`}}>
@@ -227,6 +230,7 @@ export default function Tour(){
           </div>
         </aside>
       </div>
-    </div>
+      </div>
+    </>
   )
 }

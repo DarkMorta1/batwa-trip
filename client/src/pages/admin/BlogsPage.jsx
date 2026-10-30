@@ -18,6 +18,7 @@ export default function BlogsPage() {
     title: '',
     excerpt: '',
     thumb: '',
+    articleImages: [],
     date: '',
     author: '',
     content: ''
@@ -107,6 +108,7 @@ export default function BlogsPage() {
         title: blog.title || '',
         excerpt: blog.excerpt || '',
         thumb: blog.thumb || '',
+        articleImages: Array.isArray(blog.articleImages) ? blog.articleImages : [],
         date: blog.date || new Date().toISOString().split('T')[0],
         author: blog.author || '',
         content: blog.content || ''
@@ -117,6 +119,7 @@ export default function BlogsPage() {
         title: '',
         excerpt: '',
         thumb: '',
+        articleImages: [],
         date: new Date().toISOString().split('T')[0],
         author: '',
         content: ''
@@ -185,9 +188,7 @@ export default function BlogsPage() {
       setUploadingImage(true)
       const uploadFormData = new FormData()
       uploadFormData.append('file', file)
-
-      const token = localStorage.getItem('admin_token')
-      const headers = token ? { Authorization: `Bearer ${token}` } : {}
+      const headers = authHeaders()
       
       const response = await fetch(`${API}/api/upload`, {
         method: 'POST',
@@ -217,9 +218,65 @@ export default function BlogsPage() {
     }
   }
 
+  async function handleArticleImagesUpload(e) {
+    const files = Array.from(e.target.files || [])
+    if (files.length === 0) return
+
+    const invalidFile = files.find(file => !file.type.startsWith('image/'))
+    if (invalidFile) {
+      showToast('Please upload image files only', 'error')
+      e.target.value = ''
+      return
+    }
+
+    try {
+      setUploadingImage(true)
+      const uploadedPaths = []
+
+      for (const file of files) {
+        const uploadFormData = new FormData()
+        uploadFormData.append('file', file)
+        const response = await fetch(`${API}/api/upload`, {
+          method: 'POST',
+          headers: authHeaders(),
+          body: uploadFormData
+        })
+
+        if (response.status === 401) {
+          localStorage.removeItem('admin_token')
+          window.location.href = '/admin/login'
+          throw new Error('Unauthorized')
+        }
+
+        if (!response.ok) {
+          const error = await response.json().catch(() => ({ message: 'Upload failed' }))
+          throw new Error(error.message || 'Upload failed')
+        }
+
+        const data = await response.json()
+        uploadedPaths.push(data.path)
+      }
+
+      setFormData(prev => ({ ...prev, articleImages: [...prev.articleImages, ...uploadedPaths] }))
+      showToast(`${uploadedPaths.length} article image${uploadedPaths.length === 1 ? '' : 's'} uploaded`, 'success')
+    } catch (error) {
+      showToast(error.message || 'Upload failed', 'error')
+    } finally {
+      setUploadingImage(false)
+      e.target.value = ''
+    }
+  }
+
   function removeImage() {
     setFormData(prev => ({ ...prev, thumb: '' }))
     showToast('Image removed', 'success')
+  }
+
+  function removeArticleImage(path) {
+    setFormData(prev => ({
+      ...prev,
+      articleImages: prev.articleImages.filter(image => image !== path)
+    }))
   }
 
   if (loading) {
@@ -532,6 +589,44 @@ export default function BlogsPage() {
                     × Remove
                   </button>
                   <div style={{ marginTop: '8px', fontSize: '12px', color: '#6b7280' }}>Current: {formData.thumb}</div>
+                </div>
+              )}
+
+            </div>
+            <div className="admin-form-group">
+              <label className="admin-label">Article Images (optional)</label>
+              <p className="admin-text-gray-600" style={{ fontSize: '13px', margin: '0 0 8px' }}>
+                Add extra photos to display inside the article. You can select multiple images.
+              </p>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleArticleImagesUpload}
+                className="admin-input"
+                disabled={uploadingImage}
+                style={{ padding: '8px' }}
+              />
+              {formData.articleImages.length > 0 && (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: '10px', marginTop: '12px' }}>
+                  {formData.articleImages.map(image => (
+                    <div key={image} style={{ position: 'relative' }}>
+                      <img
+                        src={image.startsWith('http') ? image : (image.startsWith('/') ? image : `/images/${image}`)}
+                        alt="Article preview"
+                        style={{ width: '100%', height: '90px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #e5e7eb' }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeArticleImage(image)}
+                        className="admin-btn admin-btn-danger"
+                        style={{ position: 'absolute', top: '4px', right: '4px', padding: '2px 6px', fontSize: '11px' }}
+                        title="Remove article image"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>

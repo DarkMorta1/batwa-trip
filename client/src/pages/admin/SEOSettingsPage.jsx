@@ -4,7 +4,7 @@ import Toast from '../../components/admin/Toast'
 import { useToast } from '../../hooks/useToast'
 import { apiRequest } from '../../utils/api'
 
-const pages = ['home', 'tours', 'blogs', 'contact', 'gallery', 'about']
+const pages = ['home', 'trips', 'blogs', 'gallery', 'about']
 
 export default function SEOSettingsPage() {
   const { toasts, showToast, removeToast } = useToast()
@@ -15,11 +15,13 @@ export default function SEOSettingsPage() {
     metaTitle: '',
     metaDescription: '',
     metaKeywords: [],
+    focusKeyword: '',
     ogTitle: '',
     ogDescription: '',
     ogImage: '',
     canonicalUrl: '',
-    customSlug: ''
+    customSlug: '',
+    indexing: 'index'
   })
   const [keywordInput, setKeywordInput] = useState('')
 
@@ -53,11 +55,13 @@ export default function SEOSettingsPage() {
       metaTitle: pageSettings.metaTitle || '',
       metaDescription: pageSettings.metaDescription || '',
       metaKeywords: pageSettings.metaKeywords || [],
+      focusKeyword: pageSettings.focusKeyword || '',
       ogTitle: pageSettings.ogTitle || '',
       ogDescription: pageSettings.ogDescription || '',
       ogImage: pageSettings.ogImage || '',
       canonicalUrl: pageSettings.canonicalUrl || '',
-      customSlug: pageSettings.customSlug || ''
+      customSlug: pageSettings.customSlug || '',
+      indexing: pageSettings.indexing || 'index'
     })
   }
 
@@ -133,7 +137,8 @@ export default function SEOSettingsPage() {
 
             <div className="admin-space-y-4">
               <div className="admin-form-group">
-                <label className="admin-label">Meta Title</label>
+                <label className="admin-label">SEO Title <span style={{ fontWeight: 400 }}>({currentSettings.metaTitle.length}/60)</span></label>
+                <p className="admin-help-text">Write the title that should appear in Google search results.</p>
                 <input
                   type="text"
                   value={currentSettings.metaTitle}
@@ -144,13 +149,25 @@ export default function SEOSettingsPage() {
               </div>
 
               <div className="admin-form-group">
-                <label className="admin-label">Meta Description</label>
+                <label className="admin-label">Meta Description <span style={{ fontWeight: 400 }}>({currentSettings.metaDescription.length}/160)</span></label>
+                <p className="admin-help-text">Write a short summary that helps people understand this page.</p>
                 <textarea
                   value={currentSettings.metaDescription}
                   onChange={e => setCurrentSettings({ ...currentSettings, metaDescription: e.target.value })}
                   rows={3}
                   className="admin-textarea"
                   placeholder="Page description for search engines (150-160 characters recommended)"
+                />
+              </div>
+
+              <div className="admin-form-group">
+                <label className="admin-label">Focus Keyword <span style={{ fontWeight: 400 }}>(optional)</span></label>
+                <input
+                  type="text"
+                  value={currentSettings.focusKeyword}
+                  onChange={e => setCurrentSettings({ ...currentSettings, focusKeyword: e.target.value })}
+                  className="admin-input"
+                  placeholder="Main phrase people may search for"
                 />
               </div>
 
@@ -229,6 +246,32 @@ export default function SEOSettingsPage() {
               </div>
 
               <div className="admin-form-group">
+                <label className="admin-label">Search visibility</label>
+                <p className="admin-help-text">Keep important public pages indexable. Use noindex only for pages that should stay out of search results.</p>
+                <select
+                  value={currentSettings.indexing}
+                  onChange={e => setCurrentSettings({ ...currentSettings, indexing: e.target.value })}
+                  className="admin-input"
+                >
+                  <option value="index">Allow search engines to index this page</option>
+                  <option value="noindex">Hide this page from search engines</option>
+                </select>
+              </div>
+
+              <div style={{ border: '1px solid #e5e7eb', borderRadius: '8px', padding: '16px', marginTop: '8px' }}>
+                <strong>Search preview</strong>
+                <div style={{ color: '#1a0dab', fontSize: '18px', marginTop: '8px' }}>
+                  {currentSettings.metaTitle || `${selectedPage} | Batuwa Trip`}
+                </div>
+                <div style={{ color: '#444', fontSize: '14px' }}>
+                  {currentSettings.canonicalUrl || `https://www.batuwatrip.com/${selectedPage === 'home' ? '' : selectedPage}`}
+                </div>
+                <div style={{ color: '#555', fontSize: '14px' }}>
+                  {currentSettings.metaDescription || 'Add a short description to preview this page in search results.'}
+                </div>
+              </div>
+
+              <div className="admin-form-group">
                 <label className="admin-label">Custom Slug (optional)</label>
                 <input
                   type="text"
@@ -255,4 +298,3 @@ export default function SEOSettingsPage() {
     </AdminLayout>
   )
 }
-

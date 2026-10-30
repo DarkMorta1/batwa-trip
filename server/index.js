@@ -14,6 +14,7 @@ const uploadRoutes = require('./routes/upload')
 const galleryRoutes = require('./routes/gallery')
 const aboutRoutes = require('./routes/about')
 const publicWebsiteSettingsRoutes = require('./routes/publicWebsiteSettings')
+const publicSeoSettingsRoutes = require('./routes/publicSeoSettings')
 
 // Admin routes
 const dashboardRoutes = require('./routes/dashboard')
@@ -55,6 +56,7 @@ app.use('/api/upload', uploadRoutes)
 app.use('/api/gallery', galleryRoutes)
 app.use('/api/about', aboutRoutes)
 app.use('/api/website-settings', publicWebsiteSettingsRoutes)
+app.use('/api/seo', publicSeoSettingsRoutes)
 app.use('/api/banner', bannerSettingsRoutes)
 app.use('/api/display-settings', displaySettingsRoutes)
 

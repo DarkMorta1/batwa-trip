@@ -4,6 +4,7 @@ import TravelCard from '../components/TravelCard'
 import { buildWhatsAppLink } from '../constants/whatsapp'
 import { getBlogSlug } from '../utils/tourSlug'
 import Footer from '../components/Footer'
+import SEOHead from '../components/SEOHead'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:4000'
 import { useNavigate } from 'react-router-dom'
@@ -135,7 +136,9 @@ export default function Home() {
   }
   
   return (
-    <div className="home-page">
+    <>
+      <SEOHead page="home" title="Batuwa Trip | Himalayan Tours and Treks in Nepal" />
+      <div className="home-page">
       <Banner />
 
       <section id="trips" className="section section--trips">
@@ -400,6 +403,7 @@ export default function Home() {
         </div>
       </section>
       <Footer />
-    </div>
+      </div>
+    </>
   )
 }
