@@ -29,7 +29,7 @@ export default function BlogDetail(){
     <div className="subpage-page" style={{padding:'16px'}}>
       <BackButton onClick={() => nav('/blogs')} />
       <div className="blog-detail">
-        <h1>{blog.title}</h1>
+        <h1 className="public-page-heading">{blog.title}</h1>
         <div className="meta">{blog.date} • By {blog.author}</div>
 
         {blog.thumb && (

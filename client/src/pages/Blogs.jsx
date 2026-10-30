@@ -1,9 +1,25 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { getBlogSlug } from '../utils/tourSlug'
 import BackButton from '../components/BackButton'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:4000'
+
+function getBlogPreview(blog) {
+  const source = blog.excerpt || blog.description || blog.content || ''
+  const text = new DOMParser()
+    .parseFromString(
+      source
+        .replace(/<br\s*\/?>/gi, ' ')
+        .replace(/<\/(p|div|li|h[1-6]|blockquote|pre|section|article)>/gi, ' ')
+        .replace(/<[^>]+>/g, ' '),
+      'text/html'
+    )
+    .body.textContent.trim()
+  const words = text.split(/\s+/).filter(Boolean)
+
+  return words.length > 120 ? `${words.slice(0, 120).join(' ')}…` : text
+}
 
 export default function Blogs(){
   const nav = useNavigate()
@@ -23,36 +39,50 @@ export default function Blogs(){
   }, [])
 
   return (
-    <div style={{padding:'28px'}}>
-      <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:12}}>
+    <div className="all-blogs-page">
+      <div className="all-blogs-heading">
         <BackButton onClick={() => nav('/')} />
-        <h1 style={{color:'#fff', margin:0}}>Travel Blogs</h1>
+        <div>
+          <p className="all-blogs-kicker">Stories from the trail</p>
+          <h1 className="public-page-heading">Travel Blogs</h1>
+        </div>
       </div>
-      <p style={{color:'rgba(255,255,255,0.85)', marginBottom:'24px'}}>Read stories from our travelers</p>
-      
+
       {blogs.length === 0 ? (
-        <div style={{ padding: '40px', textAlign: 'center', color: 'rgba(255,255,255,0.7)' }}>
+        <div className="all-blogs-empty">
           <p>No blogs available yet. Check back soon!</p>
         </div>
       ) : (
-        <div className="blog-list">
+        <div className="all-blogs-list">
           {blogs.map(blog => {
-            const imageUrl = blog.thumb?.startsWith('http') 
-              ? blog.thumb 
-              : blog.thumb?.startsWith('/') 
-                ? blog.thumb 
+            const imageUrl = blog.thumb?.startsWith('http')
+              ? blog.thumb
+              : blog.thumb?.startsWith('/')
+                ? blog.thumb
                 : `/images/${blog.thumb || 'placeholder.jpg'}`
             const blogSlug = blog.slug || getBlogSlug(blog.title)
+            const preview = getBlogPreview(blog)
+
             return (
-              <div key={blog.id} className="blog-card">
-                <div className="blog-card-thumb" style={{backgroundImage:`url(${imageUrl})`}} />
-                <div className="blog-card-body">
-                  <h3>{blog.title}</h3>
-                  <p>{blog.excerpt}</p>
-                  <div className="meta">{blog.date} • {blog.author}</div>
-                  <div className="read-more" onClick={() => nav(`/blog/${blogSlug}`)}>Read More →</div>
+              <Link
+                key={blog.id}
+                className="all-blogs-featured"
+                to={`/blog/${blogSlug}`}
+                aria-label={`Read ${blog.title}`}
+              >
+                <div className="all-blogs-featured-image">
+                  <img src={imageUrl} alt={blog.title} />
                 </div>
-              </div>
+                <div className="all-blogs-featured-content">
+                  <span className="all-blogs-featured-label">Travel story</span>
+                  <div className="all-blogs-featured-copy">
+                    <h2>{blog.title}</h2>
+                    <span className="all-blogs-divider" aria-hidden="true" />
+                    {preview && <p>{preview}</p>}
+                    <span className="all-blogs-featured-meta">{blog.date} · {blog.author}</span>
+                  </div>
+                </div>
+              </Link>
             )
           })}
         </div>

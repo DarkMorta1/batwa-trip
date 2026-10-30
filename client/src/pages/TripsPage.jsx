@@ -45,7 +45,7 @@ export default function TripsPage(){
         <BackButton onClick={() => nav(-1)} />
       </div>
 
-      <h2 style={{ marginTop: 0 }}>{title}</h2>
+      <h2 className="public-page-heading">{title}</h2>
 
       <div className="search-bar" style={{ margin: '12px 0 20px' }}>
         <input

@@ -128,6 +128,11 @@ export default function BlogsPage() {
 
   async function saveBlog() {
     try {
+      if (formData.title.length > 35 || formData.excerpt.length > 200) {
+        showToast('Title must be 35 characters or fewer and excerpt must be 200 characters or fewer', 'error')
+        return
+      }
+
       if (!formData.title || !formData.excerpt || !formData.thumb) {
         showToast('Please fill required fields (Title, Excerpt, Thumbnail)', 'error')
         return
@@ -435,25 +440,35 @@ export default function BlogsPage() {
         >
           <div className="admin-space-y-4" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
             <div className="admin-form-group">
-              <label className="admin-label">Title *</label>
+              <label className="admin-label" htmlFor="blog-title">Title * (max 35 characters)</label>
               <input
+                id="blog-title"
                 type="text"
                 value={formData.title}
                 onChange={e => setFormData({ ...formData, title: e.target.value })}
                 className="admin-input"
+                maxLength={35}
                 required
               />
+              <div className="admin-character-count" aria-live="polite">
+                {formData.title.length}/35 characters
+              </div>
             </div>
 
             <div className="admin-form-group">
-              <label className="admin-label">Excerpt *</label>
+              <label className="admin-label" htmlFor="blog-excerpt">Excerpt * (max 200 characters)</label>
               <textarea
+                id="blog-excerpt"
                 value={formData.excerpt}
                 onChange={e => setFormData({ ...formData, excerpt: e.target.value })}
                 rows={2}
                 className="admin-textarea"
+                maxLength={200}
                 required
               />
+              <div className="admin-character-count" aria-live="polite">
+                {formData.excerpt.length}/200 characters
+              </div>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
@@ -564,4 +579,3 @@ export default function BlogsPage() {
     </AdminLayout>
   )
 }
-

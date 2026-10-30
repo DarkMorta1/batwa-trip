@@ -32,6 +32,21 @@ const navItems = [
   { path: '/about', label: 'About Us', icon: '👥' },
 ]
 
+function getPageTitle(pathname) {
+  if (pathname.startsWith('/trips/')) {
+    const section = pathname.split('/')[2]
+    if (section === 'upcoming') return 'Upcoming Trips'
+    if (section === 'available') return 'Available Trips'
+    return 'Trips'
+  }
+  if (pathname === '/gallery') return 'Gallery'
+  if (pathname === '/blogs' || pathname.startsWith('/blog/')) return 'Blogs'
+  if (pathname === '/about') return 'About Us'
+  if (pathname === '/contact') return 'Contact'
+  if (pathname.startsWith('/tour/')) return 'Trip Details'
+  return ''
+}
+
 function BottomNav() {
   const { pathname } = useLocation()
   const [heroActive, setHeroActive] = useState(pathname === '/')
@@ -111,7 +126,7 @@ export default function App() {
     <div className="page">
       {location.pathname !== '/' && (
         <header className="logo-bar">
-          <img src="/images/logo.jpg" alt="Logo" className="logo" />
+          <div className="page-header-title">{getPageTitle(location.pathname)}</div>
         </header>
       )}
 
@@ -133,4 +148,3 @@ export default function App() {
     </div>
   )
 }
-

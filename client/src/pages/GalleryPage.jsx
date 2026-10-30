@@ -18,7 +18,7 @@ export default function GalleryPage(){
   return (
     <div style={{padding:'16px'}}>
       <BackButton onClick={() => nav('/')} />
-      <h1 style={{color:'#fff', marginBottom:'12px', fontSize: 'clamp(20px, 5vw, 28px)'}}>Memories from Our Tours</h1>
+      <h1 className="public-page-heading" style={{ marginBottom: '12px' }}>Memories from Our Tours</h1>
       <p style={{color:'rgba(255,255,255,0.85)', marginBottom:'24px', fontSize: 'clamp(13px, 3vw, 15px)'}}>Gallery of beautiful moments captured by our travelers</p>
       <Gallery photos={photos} />
     </div>

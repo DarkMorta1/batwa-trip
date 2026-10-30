@@ -34,8 +34,8 @@ export default function Contact() {
           <span style={{ color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', fontWeight: '600', fontSize: '12px', letterSpacing: '0.5px' }}>
             Stay Connected
           </span>
-          <h1 style={{ color: '#fff', margin: '4px 0 12px 0', fontSize: 'clamp(22px, 5vw, 28px)', fontWeight: '700', lineHeight: '1.2' }}>
-            <span style={{ color: '#e91e63' }}>Contact</span> Us
+          <h1 className="public-page-heading" style={{ margin: '4px 0 12px 0' }}>
+            Contact Us
           </h1>
           <p style={{ color: 'rgba(255,255,255,0.75)', margin: 0, fontSize: '15px', lineHeight: '1.6' }}>
             Have questions about our tours? We're here to help! Reach out through any of these channels.

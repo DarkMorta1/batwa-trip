@@ -39,7 +39,7 @@ export default function About() {
   return (
     <div className="about-page">
       <header className="logo-bar about-page__topbar" aria-label="About page navigation">
-        <img src="/images/logo.jpg" alt="Batuwa Trip" className="logo" />
+        <div className="page-header-title">About Us</div>
         <div className="about-page__back-wrap">
           <BackButton onClick={() => navigate('/')} />
         </div>
@@ -47,7 +47,7 @@ export default function About() {
       {loading && <div className="about-page__state">Loading About Us...</div>}
       {!loading && (error || !content) && (
         <div className="about-page__state">
-          <h1>About Us</h1>
+          <h1 className="public-page-heading">About Us</h1>
           <p>Our story is being prepared. Please check back soon.</p>
         </div>
       )}
@@ -57,7 +57,7 @@ export default function About() {
             <div className="about-page__content-grid">
               <div className="about-page__story">
                 <span className="about-page__section-label">Our story</span>
-                <h1>{content.title || 'Explore Nepal Beyond the Ordinary'}</h1>
+                <h1 className="public-page-heading">{content.title || 'Explore Nepal Beyond the Ordinary'}</h1>
                 {content.subtitle && <p className="about-page__subtitle">{content.subtitle}</p>}
                 <span className="about-page__tagline">BE A PART OF A NEW TRAIL</span>
                 {description && <p className="about-page__description">{description}</p>}
