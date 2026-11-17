@@ -4,7 +4,7 @@ const { requireAdmin } = require('./middleware')
 const WebsiteSettings = require('../models/WebsiteSettings')
 const ActivityLog = require('../models/ActivityLog')
 
-// GET /api/admin/website-settings
+// GET /api/admin/website-settings(this is fix)
 router.get('/', requireAdmin, async (req, res) => {
   try {
     const settings = await WebsiteSettings.getSettings()

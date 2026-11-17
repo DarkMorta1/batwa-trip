@@ -3,7 +3,7 @@ const router = express.Router()
 const { requireAdmin } = require('./middleware')
 const ActivityLog = require('../models/ActivityLog')
 
-// GET /api/admin/activity-logs
+// GET /api/admin/activity-logs(this is fix)
 router.get('/', requireAdmin, async (req, res) => {
   try {
     const { page = 1, limit = 50, resource, adminId } = req.query

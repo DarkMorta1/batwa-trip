@@ -4,7 +4,7 @@ const { requireAdmin } = require('./middleware')
 const ThemeSettings = require('../models/ThemeSettings')
 const ActivityLog = require('../models/ActivityLog')
 
-// GET /api/admin/theme
+// GET /api/admin/theme(this is fix)
 router.get('/', requireAdmin, async (req, res) => {
   try {
     const theme = await ThemeSettings.getTheme()

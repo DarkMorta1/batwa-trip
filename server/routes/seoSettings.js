@@ -4,7 +4,7 @@ const { requireAdmin } = require('./middleware')
 const SEOSettings = require('../models/SEOSettings')
 const ActivityLog = require('../models/ActivityLog')
 
-// GET /api/admin/seo - Get all SEO settings
+// GET /api/admin/seo - Get all SEO settings(this is fix)
 router.get('/', requireAdmin, async (req, res) => {
   try {
     const settings = await SEOSettings.find().sort({ page: 1 })
