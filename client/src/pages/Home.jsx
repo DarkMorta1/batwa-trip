@@ -5,18 +5,10 @@ import { buildWhatsAppLink } from '../constants/whatsapp'
 import { getBlogSlug } from '../utils/tourSlug'
 import Footer from '../components/Footer'
 import SEOHead from '../components/SEOHead'
+import { getImageUrl } from '../utils/imageUrl'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:4000'
 import { useNavigate } from 'react-router-dom'
-
-const memoryPhotos = [
-  '/images/1765290625930.JPG',
-  '/images/1765290625942.JPG',
-  '/images/1765290625950.jpg',
-  '/images/1765290625960.jpg',
-  '/images/1765290625968.jpg',
-  '/images/1765290625980.jpg',
-]
 
 const HOME_REVIEWS = [
   {
@@ -194,9 +186,7 @@ export default function Home() {
         ) : (() => {
           const featuredBlog = latestBlogs[currentBlogIndex] || latestBlogs[0]
           const secondaryBlogs = latestBlogs.filter((blog, index) => index !== currentBlogIndex).slice(0, 2)
-          const blogImage = (blog) => blog?.thumb
-            ? (blog.thumb.startsWith('http') ? blog.thumb : (blog.thumb.startsWith('/') ? blog.thumb : `/images/${blog.thumb}`))
-            : '/images/placeholder.jpg'
+          const blogImage = (blog, width) => getImageUrl(blog?.thumb || 'placeholder.jpg', width)
           const readTime = (blog) => {
             const wordCount = (blog?.excerpt || '').split(/\s+/).filter(Boolean).length || 120
             return Math.max(3, Math.ceil(wordCount / 150))
@@ -219,8 +209,10 @@ export default function Home() {
                   </div>
                   <div className="latest-blogs__featured-image-wrap">
                     <img
-                      src={blogImage(featuredBlog)}
+                      src={blogImage(featuredBlog, 800)}
                       alt={featuredBlog?.title}
+                      loading="lazy"
+                      decoding="async"
                       onError={(e) => {
                         e.target.src = '/images/placeholder.jpg'
                       }}
@@ -249,8 +241,10 @@ export default function Home() {
                       aria-label={`Open blog: ${blog?.title}`}
                     >
                       <img
-                        src={blogImage(blog)}
+                        src={blogImage(blog, 400)}
                         alt={blog?.title}
+                        loading="lazy"
+                        decoding="async"
                         onError={(e) => {
                           e.target.src = '/images/placeholder.jpg'
                         }}

@@ -19,3 +19,5 @@ npm run dev
 ```
 
 Uploads and static assets are served from `client/public/images` and are reachable at `/images/...` from both the app and API responses.
+
+Cloudinary-hosted images are optimized at render time by `client/src/utils/imageUrl.js`; uploads and stored image URLs remain unchanged.

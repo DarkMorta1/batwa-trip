@@ -3,13 +3,14 @@ import { useNavigate } from 'react-router-dom'
 import { sanitizeRichText, hasRichTextContent } from '../components/RichTextEditor'
 import BackButton from '../components/BackButton'
 import SEOHead from '../components/SEOHead'
+import { getImageUrl } from '../utils/imageUrl'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:4000'
 const activityNames = ['Hiking', 'Trekking', 'Camping', 'Jeep Tours']
 
 function imageUrl(value) {
   if (!value) return ''
-  return value.startsWith('http') || value.startsWith('/') ? value : `/images/${value}`
+  return getImageUrl(value, 1000)
 }
 
 export default function About() {
@@ -75,7 +76,7 @@ export default function About() {
                 )}
               </div>
               <aside className="about-page__feature">
-                <img src={imageUrl(images[0]) || heroImage} alt="A Batuwa Trip travel experience" />
+                <img src={imageUrl(images[0]) || heroImage} alt="A Batuwa Trip travel experience" loading="eager" decoding="async" />
                 <div className="about-page__feature-copy">
                   <span>Travel with purpose</span>
                   <strong>Local insight. Open trails. Lasting memories.</strong>
@@ -90,7 +91,7 @@ export default function About() {
             {images.length > 1 && (
               <div className="about-page__gallery">
                 {images.slice(1).map((image, index) => (
-                  <img key={`${image}-${index}`} src={imageUrl(image)} alt={`Batuwa Trip ${index + 2}`} />
+                  <img key={`${image}-${index}`} src={getImageUrl(image, 400)} alt={`Batuwa Trip ${index + 2}`} loading="lazy" decoding="async" />
                 ))}
               </div>
             )}

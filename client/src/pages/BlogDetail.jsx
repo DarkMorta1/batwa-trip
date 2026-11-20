@@ -3,16 +3,12 @@ import { useParams } from 'react-router-dom'
 import { sanitizeRichText } from '../components/RichTextEditor'
 import { getBlogSlug } from '../utils/tourSlug'
 import SEOHead from '../components/SEOHead'
+import { getImageUrl as resolveImageUrl } from '../utils/imageUrl'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:4000'
 
-function getImageUrl(path) {
-  const imagePath = typeof path === 'string' ? path.trim() : ''
-  return imagePath.startsWith('http')
-    ? imagePath
-    : imagePath.startsWith('/')
-      ? imagePath
-      : `/images/${imagePath || 'placeholder.jpg'}`
+function getImageUrl(path, width = 1400) {
+  return resolveImageUrl(typeof path === 'string' && path.trim() ? path : 'placeholder.jpg', width)
 }
 
 function serializeNode(node) {
@@ -78,7 +74,7 @@ export default function BlogDetail(){
   const imageUrl = getImageUrl(blog.thumb)
   const content = sanitizeRichText(blog.content || '')
   const articleImages = Array.isArray(blog.articleImages)
-    ? blog.articleImages.filter(Boolean).map(getImageUrl)
+    ? blog.articleImages.filter(Boolean).map(image => getImageUrl(image, 1000))
     : []
   const articleSections = buildArticleSections(content, articleImages)
   const scrollToArticle = () => articleRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -119,6 +115,8 @@ export default function BlogDetail(){
                     className="blog-detail-page__article-image"
                     src={section.image}
                     alt={`${blog.title} article image ${index + 1}`}
+                    loading="lazy"
+                    decoding="async"
                   />
                 )}
               </section>

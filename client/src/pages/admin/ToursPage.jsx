@@ -6,6 +6,7 @@ import ConfirmModal from '../../components/admin/ConfirmModal'
 import RichTextEditor, { hasRichTextContent } from '../../components/RichTextEditor'
 import { useToast } from '../../hooks/useToast'
 import { apiRequest, API, authHeaders } from '../../utils/api'
+import { getImageUrl } from '../../utils/imageUrl'
 
 const DESCRIPTION_WORD_LIMIT = 50
 
@@ -556,8 +557,10 @@ function moveItineraryDay(index, direction) {
                     <div style={{ display: 'flex', gap: '12px', marginBottom: '8px' }}>
                       {tour.img && (
                         <img
-                          src={tour.img.startsWith('http') ? tour.img : (tour.img.startsWith('/') ? tour.img : `/images/${tour.img}`)}
+                          src={getImageUrl(tour.img, 300)}
                           alt={tour.title}
+                          loading="lazy"
+                          decoding="async"
                           style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '6px' }}
                           onError={(e) => { e.target.style.display = 'none' }}
                         />
@@ -613,8 +616,10 @@ function moveItineraryDay(index, direction) {
                     <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                       {tour.img && (
                         <img
-                          src={tour.img.startsWith('http') ? tour.img : (tour.img.startsWith('/') ? tour.img : `/images/${tour.img}`)}
+                          src={getImageUrl(tour.img, 300)}
                           alt={tour.title}
+                          loading="lazy"
+                          decoding="async"
                           style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px' }}
                           onError={(e) => { e.target.style.display = 'none' }}
                         />
@@ -661,9 +666,11 @@ function moveItineraryDay(index, direction) {
                     <td>
                       <div className="admin-flex" style={{ gap: '12px', alignItems: 'center' }}>
                         {tour.img && (
-                          <img 
-                            src={tour.img.startsWith('http') ? tour.img : (tour.img.startsWith('/') ? tour.img : `/images/${tour.img}`)} 
-                            alt={tour.title} 
+                          <img
+                            src={getImageUrl(tour.img, 300)}
+                            alt={tour.title}
+                            loading="lazy"
+                            decoding="async"
                             style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '6px' }}
                             onError={(e) => { e.target.style.display = 'none' }}
                           />
@@ -916,9 +923,11 @@ function moveItineraryDay(index, direction) {
               {uploadingImage && <div style={{ marginTop: '8px', color: '#6b7280' }}>Uploading...</div>}
               {formData.img && (
                 <div style={{ marginTop: '12px', position: 'relative', display: 'inline-block' }}>
-                  <img 
-                    src={formData.img.startsWith('http') ? formData.img : (formData.img.startsWith('/') ? formData.img : `/images/${formData.img}`)} 
-                    alt="Preview" 
+                  <img
+                    src={getImageUrl(formData.img, 400)}
+                    alt="Preview"
+                    loading="lazy"
+                    decoding="async"
                     style={{ maxWidth: '200px', maxHeight: '150px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #e5e7eb' }} 
                   />
                   <button
@@ -962,9 +971,11 @@ function moveItineraryDay(index, direction) {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: '12px', marginTop: '12px' }}>
                   {formData.photos.map((photo, index) => (
                     <div key={index} style={{ position: 'relative' }}>
-                      <img 
-                        src={photo.startsWith('http') ? photo : (photo.startsWith('/') ? photo : `/images/${photo}`)} 
-                        alt={`Photo ${index + 1}`} 
+                      <img
+                        src={getImageUrl(photo, 400)}
+                        alt={`Photo ${index + 1}`}
+                        loading="lazy"
+                        decoding="async"
                         style={{ 
                           width: '100%', 
                           height: '100px', 

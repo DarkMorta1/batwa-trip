@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { getImageUrl } from '../utils/imageUrl'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:4000'
 
@@ -56,7 +57,7 @@ export default function Banner() {
     <section className="hero">
       <div
         className="hero__image"
-        style={{ backgroundImage: `url(${currentImage.startsWith('http') ? currentImage : (currentImage.startsWith('/') ? currentImage : `/images/${currentImage}`)})` }}
+        style={{ backgroundImage: `url("${getImageUrl(currentImage, 1400)}")` }}
       >
         <img src="/images/logo.jpg" alt="Batuwa Trip" className="hero__logo" />
         <div className="hero__overlay">

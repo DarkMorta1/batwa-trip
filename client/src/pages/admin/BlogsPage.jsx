@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { getImageUrl } from '../../utils/imageUrl'
 import AdminLayout from '../../components/admin/AdminLayout'
 import Toast from '../../components/admin/Toast'
 import Modal from '../../components/admin/Modal'
@@ -329,8 +330,10 @@ export default function BlogsPage() {
                     <div style={{ display: 'flex', gap: '12px', marginBottom: '8px' }}>
                       {blog.thumb && (
                         <img
-                          src={blog.thumb.startsWith('http') ? blog.thumb : (blog.thumb.startsWith('/') ? blog.thumb : `/images/${blog.thumb}`)}
+                          src={getImageUrl(blog.thumb, 300)}
                           alt={blog.title}
+                          loading="lazy"
+                          decoding="async"
                           style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '6px' }}
                           onError={(e) => { e.target.style.display = 'none' }}
                         />
@@ -386,8 +389,10 @@ export default function BlogsPage() {
                     <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                       {blog.thumb && (
                         <img
-                          src={blog.thumb.startsWith('http') ? blog.thumb : (blog.thumb.startsWith('/') ? blog.thumb : `/images/${blog.thumb}`)}
+                          src={getImageUrl(blog.thumb, 300)}
                           alt={blog.title}
+                          loading="lazy"
+                          decoding="async"
                           style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px' }}
                           onError={(e) => { e.target.style.display = 'none' }}
                         />
@@ -432,9 +437,11 @@ export default function BlogsPage() {
                     <td>
                       <div className="admin-flex" style={{ gap: '12px', alignItems: 'center' }}>
                         {blog.thumb && (
-                          <img 
-                            src={blog.thumb.startsWith('http') ? blog.thumb : (blog.thumb.startsWith('/') ? blog.thumb : `/images/${blog.thumb}`)} 
-                            alt={blog.title} 
+                          <img
+                            src={getImageUrl(blog.thumb, 300)}
+                            alt={blog.title}
+                            loading="lazy"
+                            decoding="async"
                             style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '6px' }}
                             onError={(e) => { e.target.style.display = 'none' }}
                           />
@@ -563,8 +570,10 @@ export default function BlogsPage() {
               {formData.thumb && (
                 <div style={{ marginTop: '12px', position: 'relative', display: 'inline-block' }}>
                   <img 
-                    src={formData.thumb.startsWith('http') ? formData.thumb : (formData.thumb.startsWith('/') ? formData.thumb : `/images/${formData.thumb}`)} 
+                    src={getImageUrl(formData.thumb, 400)}
                     alt="Preview" 
+                    loading="lazy"
+                    decoding="async"
                     style={{ maxWidth: '200px', maxHeight: '150px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #e5e7eb' }} 
                   />
                   <button
@@ -612,8 +621,10 @@ export default function BlogsPage() {
                   {formData.articleImages.map(image => (
                     <div key={image} style={{ position: 'relative' }}>
                       <img
-                        src={image.startsWith('http') ? image : (image.startsWith('/') ? image : `/images/${image}`)}
+                        src={getImageUrl(image, 300)}
                         alt="Article preview"
+                        loading="lazy"
+                        decoding="async"
                         style={{ width: '100%', height: '90px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #e5e7eb' }}
                       />
                       <button

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { getImageUrl } from '../utils/imageUrl'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:4000'
 function authHeaders(){ const t = localStorage.getItem('admin_token'); return t?{ Authorization:`Bearer ${t}` }:{} }
@@ -60,7 +61,7 @@ export default function AdminTours(){
             <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
               {form.photos.map((p,i)=> (
                 <div key={i} style={{background:'#fff',padding:6,borderRadius:8}}>
-                  <img src={p} alt={`p-${i}`} style={{height:56,width:80,objectFit:'cover',borderRadius:6}} />
+                  <img src={getImageUrl(p, 300)} alt={`p-${i}`} loading="lazy" decoding="async" style={{height:56,width:80,objectFit:'cover',borderRadius:6}} />
                   <div>
                     <button className="btn" type="button" onClick={()=>setForm(f=>({ ...f, photos: f.photos.filter((_,idx)=>idx!==i) }))}>Remove</button>
                   </div>

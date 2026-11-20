@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { getBlogSlug } from '../utils/tourSlug'
 import BackButton from '../components/BackButton'
 import SEOHead from '../components/SEOHead'
+import { getImageUrl } from '../utils/imageUrl'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:4000'
 
@@ -58,11 +59,7 @@ export default function Blogs(){
       ) : (
         <div className="all-blogs-list">
           {blogs.map(blog => {
-            const imageUrl = blog.thumb?.startsWith('http')
-              ? blog.thumb
-              : blog.thumb?.startsWith('/')
-                ? blog.thumb
-                : `/images/${blog.thumb || 'placeholder.jpg'}`
+            const imageUrl = getImageUrl(blog.thumb || 'placeholder.jpg', 700)
             const blogSlug = blog.slug || getBlogSlug(blog.title)
             const preview = getBlogPreview(blog)
 
@@ -74,7 +71,7 @@ export default function Blogs(){
                 aria-label={`Read ${blog.title}`}
               >
                 <div className="all-blogs-featured-image">
-                  <img src={imageUrl} alt={blog.title} />
+                  <img src={imageUrl} alt={blog.title} loading="lazy" decoding="async" />
                 </div>
                 <div className="all-blogs-featured-content">
                   <span className="all-blogs-featured-label">Travel story</span>

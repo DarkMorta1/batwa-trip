@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { getImageUrl } from '../utils/imageUrl'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:4000'
 
@@ -341,7 +342,7 @@ export default function AdminDashboard(){
               {tourForm.photos.map((p,i)=> (
                 <div key={i} style={{background:'#fff',padding:6,borderRadius:8}}>
                   <div style={{display:'flex',gap:8,alignItems:'center'}}>
-                    <img src={p} alt={`photo-${i}`} style={{height:56,width:80,objectFit:'cover',borderRadius:6}} />
+                    <img src={getImageUrl(p, 300)} alt={`photo-${i}`} loading="lazy" decoding="async" style={{height:56,width:80,objectFit:'cover',borderRadius:6}} />
                     <div style={{display:'flex',flexDirection:'column'}}>
                       <div style={{fontSize:12, maxWidth:200, overflow:'hidden', textOverflow:'ellipsis'}}>{p}</div>
                       <div>
@@ -443,7 +444,7 @@ export default function AdminDashboard(){
           <div style={{display:'flex',gap:8,flexWrap:'wrap',marginTop:12}}>
             {gallery.map(item => (
               <div key={item._id} style={{width:140,background:'#fff',padding:8,borderRadius:8,display:'flex',flexDirection:'column',alignItems:'center'}}>
-                <img src={item.path} alt={item.caption || 'uploaded'} style={{width:120,height:80,objectFit:'cover',borderRadius:6}} />
+                <img src={getImageUrl(item.path, 300)} alt={item.caption || 'uploaded'} loading="lazy" decoding="async" style={{width:120,height:80,objectFit:'cover',borderRadius:6}} />
                 <div style={{fontSize:12,color:'#333',marginTop:6,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',width:'100%'}}>{item.caption || item.path}</div>
                 <div style={{display:'flex',gap:6,marginTop:8}}>
                   <button className="btn" onClick={()=>setBlogForm(f=>({ ...f, thumb: item.path }))}>Use Thumb</button>

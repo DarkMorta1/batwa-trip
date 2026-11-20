@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { getImageUrl } from '../../utils/imageUrl'
 import AdminLayout from '../../components/admin/AdminLayout'
 import Toast from '../../components/admin/Toast'
 import ConfirmModal from '../../components/admin/ConfirmModal'
@@ -120,8 +121,10 @@ export default function MediaLibraryPage() {
             {gallery.map(item => (
               <div key={item._id} className="admin-card" style={{ padding: '12px' }}>
                 <img
-                  src={item.path.startsWith('http') ? item.path : (item.path.startsWith('/') ? item.path : `/images/${item.path}`)}
+                  src={getImageUrl(item.path, 400)}
                   alt={item.caption || 'Media'}
+                  loading="lazy"
+                  decoding="async"
                   style={{ width: '100%', height: '150px', objectFit: 'cover', borderRadius: '6px', marginBottom: '8px' }}
                   onError={(e) => { e.target.style.display = 'none' }}
                 />

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { buildWhatsAppLink } from '../constants/whatsapp'
 import { getTourSlug } from '../utils/tourSlug'
 import { sanitizeRichText } from './RichTextEditor'
+import { getImageUrl } from '../utils/imageUrl'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:4000'
 
@@ -42,14 +43,10 @@ export default function TravelCard({ tour, variant }) {
     <article className={`trend-card${variant ? ` trend-card--${variant}` : ''}`}>
       <div className={`trend-card__media${variant === 'trips' ? ' trend-card__media--trips-all' : ''}`}>
         <img 
-          src={
-            tour.img?.startsWith('http') 
-              ? tour.img 
-              : tour.img?.startsWith('/') 
-                ? tour.img 
-                : `/images/${tour.img || 'placeholder.jpg'}`
-          } 
+          src={getImageUrl(tour.img || 'placeholder.jpg', 600)}
           alt={tour.title}
+          loading="lazy"
+          decoding="async"
           onError={(e) => {
             e.target.src = '/images/placeholder.jpg'
           }}

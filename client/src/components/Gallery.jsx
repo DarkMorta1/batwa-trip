@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import '../styles.css'
+import { getImageUrl } from '../utils/imageUrl'
 
 export default function Gallery({ photos = [] }){
   const [lightbox, setLightbox] = useState(null)
@@ -8,13 +9,7 @@ export default function Gallery({ photos = [] }){
   const displayed = showAll ? photos : photos.slice(0, 6)
   
   const nav = (d) => {
-    const normalizedPhotos = photos.map(photo => 
-      photo?.startsWith('http') 
-        ? photo 
-        : photo?.startsWith('/') 
-          ? photo 
-          : `/images/${photo || 'placeholder.jpg'}`
-    )
+    const normalizedPhotos = photos.map(photo => getImageUrl(photo || 'placeholder.jpg'))
     let idx = normalizedPhotos.indexOf(lightbox)
     idx = (idx + d + normalizedPhotos.length) % normalizedPhotos.length
     setLightbox(normalizedPhotos[idx])
@@ -24,16 +19,14 @@ export default function Gallery({ photos = [] }){
     <>
       <div className="gallery-grid">
         {displayed.map((photo, i) => {
-          const photoSrc = photo?.startsWith('http') 
-            ? photo 
-            : photo?.startsWith('/') 
-              ? photo 
-              : `/images/${photo || 'placeholder.jpg'}`
+          const photoSrc = getImageUrl(photo || 'placeholder.jpg', 400)
           return (
             <div key={i} className="gallery-item" onClick={() => setLightbox(photoSrc)}>
               <img 
                 src={photoSrc} 
                 alt={`Gallery ${i + 1}`}
+                loading="lazy"
+                decoding="async"
                 onError={(e) => {
                   e.target.src = '/images/placeholder.jpg'
                 }}
@@ -106,7 +99,7 @@ export default function Gallery({ photos = [] }){
             >
               ×
             </button>
-            <img src={lightbox} alt="Full" />
+            <img src={getImageUrl(lightbox, 1200)} alt="Full" decoding="async" />
             <div className="lightbox-nav">
               <button onClick={() => nav(-1)}>‹</button>
               <button onClick={() => nav(1)}>›</button>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { getImageUrl } from '../../utils/imageUrl'
 import AdminLayout from '../../components/admin/AdminLayout'
 import Toast from '../../components/admin/Toast'
 import { useToast } from '../../hooks/useToast'
@@ -81,8 +82,10 @@ export default function ThemeSettingsPage() {
                   placeholder="/images/logo.png"
                 />
                 {theme.logo && (
-                  <img src={theme.logo.startsWith('http') ? theme.logo : (theme.logo.startsWith('/') ? theme.logo : `/images/${theme.logo}`)} 
+                  <img src={getImageUrl(theme.logo, 300)}
                     alt="Logo preview" 
+                    loading="lazy"
+                    decoding="async"
                     style={{ marginTop: '8px', maxHeight: '60px', maxWidth: '200px' }}
                     onError={(e) => { e.target.style.display = 'none' }}
                   />

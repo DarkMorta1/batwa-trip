@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { getImageUrl } from '../utils/imageUrl'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:4000'
 const SITE_URL = 'https://www.batuwatrip.com'
@@ -22,7 +23,7 @@ function getCanonicalUrl(value, pathname, page) {
 
 function getAbsoluteImageUrl(value) {
   try {
-    const url = new URL(value || '/images/logo.jpg', SITE_URL)
+    const url = new URL(getImageUrl(value || '/images/logo.jpg', 1200), SITE_URL)
     return ['http:', 'https:'].includes(url.protocol) ? url.href : `${SITE_URL}/images/logo.jpg`
   } catch {
     return `${SITE_URL}/images/logo.jpg`

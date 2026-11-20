@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { getImageUrl } from '../../utils/imageUrl'
 import AdminLayout from '../../components/admin/AdminLayout'
 import Toast from '../../components/admin/Toast'
 import Modal from '../../components/admin/Modal'
@@ -171,8 +172,10 @@ export default function BannerSettingsPage() {
                 {bannerData.images.map((image, index) => (
                   <div key={index} className="admin-card" style={{ padding: '12px' }}>
                     <img
-                      src={image.startsWith('http') ? image : (image.startsWith('/') ? image : `/images/${image}`)}
+                      src={getImageUrl(image, 400)}
                       alt={`Banner ${index + 1}`}
+                      loading="lazy"
+                      decoding="async"
                       style={{ width: '100%', height: '120px', objectFit: 'cover', borderRadius: '6px', marginBottom: '8px' }}
                       onError={(e) => { e.target.style.display = 'none' }}
                     />

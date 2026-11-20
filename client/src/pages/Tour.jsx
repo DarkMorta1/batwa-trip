@@ -5,6 +5,7 @@ import { sanitizeRichText, hasRichTextContent } from '../components/RichTextEdit
 import { getTourSlug } from '../utils/tourSlug'
 import BackButton from '../components/BackButton'
 import SEOHead from '../components/SEOHead'
+import { getImageUrl } from '../utils/imageUrl'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:4000'
 
@@ -99,7 +100,7 @@ export default function Tour(){
       <div className="tour-page">
       <div className="subpage-container__back"><BackButton onClick={() => nav('/')} /></div>
 
-      <div className="tour-hero" style={{backgroundImage:`url(${tour.img})`}}>
+      <div className="tour-hero" style={{backgroundImage:`url("${getImageUrl(tour.img, 1200)}")`}}>
         <div className="hero-overlay">
           <h1>{tour.title}</h1>
           <p>
