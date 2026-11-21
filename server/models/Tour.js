@@ -23,12 +23,27 @@ const SeasonalPricingSchema = new mongoose.Schema({
   discountPercent: { type: Number, default: 0 }
 }, { _id: false })
 
+const TourSEOSchema = new mongoose.Schema({
+  metaTitle: { type: String, default: '' },
+  metaDescription: { type: String, default: '' },
+  focusKeyword: { type: String, default: '' },
+  ogTitle: { type: String, default: '' },
+  ogDescription: { type: String, default: '' },
+  ogImage: { type: String, default: '' },
+  indexing: {
+    type: String,
+    enum: ['index', 'noindex'],
+    default: 'index'
+  }
+}, { _id: false })
+
 const TourSchema = new mongoose.Schema({
   title: { type: String, required: true },
   slug: { type: String, unique: true, sparse: true },
   img: { type: String, required: true },
   desc: { type: String, required: true },
   fullDescription: { type: String, default: '' },
+  seo: { type: TourSEOSchema, default: undefined },
   price: { type: Number, required: true, default: 0 },
   showPrice: { type: Boolean, default: true },
   discountPrice: { type: Number, default: 0 },
@@ -76,6 +91,28 @@ TourSchema.pre('save', async function(next) {
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '')
   }
+  next()
+})
+
+// Keep updates to individual SEO fields from replacing other saved SEO fields.
+TourSchema.pre('findOneAndUpdate', function(next) {
+  const update = this.getUpdate()
+  if (!update) return next()
+
+  const expandSeo = (target) => {
+    if (!target || typeof target !== 'object' || Array.isArray(target) || !target.seo ||
+      typeof target.seo !== 'object' || Array.isArray(target.seo)) {
+      return
+    }
+
+    Object.entries(target.seo).forEach(([key, value]) => {
+      target[`seo.${key}`] = value
+    })
+    delete target.seo
+  }
+
+  expandSeo(update.$set)
+  expandSeo(update)
   next()
 })
 

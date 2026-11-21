@@ -48,9 +48,16 @@ function buildSitemap(tours, blogs, seoSettings) {
   ]
 
   for (const tour of tours) {
-    const slug = slugify(tour.title)
-    if (tour.status === 'published' && slug) {
-      candidates.push({ path: `/tour/${slug}`, page: `tour-${slug}` })
+    const storedSlug = typeof tour.slug === 'string' ? tour.slug.trim().toLowerCase() : ''
+    const slug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(storedSlug)
+      ? storedSlug
+      : slugify(tour.title)
+    if (tour.status === 'published' && slug && tour.seo?.indexing !== 'noindex') {
+      candidates.push({
+        path: `/tour/${slug}`,
+        page: `tour-${slug}`,
+        updatedAt: tour.updatedAt
+      })
     }
   }
 
@@ -77,12 +84,17 @@ function buildSitemap(tours, blogs, seoSettings) {
     if (!path || includedPaths.has(path)) continue
 
     includedPaths.add(path)
-    urls.push(`${SITE_URL}${path}`)
+    let lastmod = ''
+    if (candidate.updatedAt) {
+      const date = new Date(candidate.updatedAt)
+      if (!Number.isNaN(date.getTime())) {
+        lastmod = `\n    <lastmod>${escapeXml(date.toISOString())}</lastmod>`
+      }
+    }
+    urls.push(`  <url>\n    <loc>${escapeXml(`${SITE_URL}${path}`)}</loc>${lastmod}\n  </url>`)
   }
 
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls
-    .map(url => `  <url><loc>${escapeXml(url)}</loc></url>`)
-    .join('\n')}\n</urlset>\n`
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`
 }
 
 async function fetchArray(url, isValidItem) {

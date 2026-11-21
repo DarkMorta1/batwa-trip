@@ -2,12 +2,29 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import Gallery from '../components/Gallery'
 import { sanitizeRichText, hasRichTextContent } from '../components/RichTextEditor'
-import { getTourSlug } from '../utils/tourSlug'
+import { getTourSlug, getCanonicalTourSlug } from '../utils/tourSlug'
 import BackButton from '../components/BackButton'
 import SEOHead from '../components/SEOHead'
 import { getImageUrl } from '../utils/imageUrl'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:4000'
+
+function getPlainTextExcerpt(value = '', maxLength = 160) {
+  if (typeof value !== 'string' || !value.trim()) return ''
+
+  const doc = new DOMParser().parseFromString(value, 'text/html')
+  const text = (doc.body.textContent || '')
+    .replace(/\u00a0/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+
+  if (!text) return ''
+  if (text.length <= maxLength) return text
+
+  const shortened = text.slice(0, maxLength - 1)
+  const lastSpace = shortened.lastIndexOf(' ')
+  return `${shortened.slice(0, lastSpace > maxLength * 0.7 ? lastSpace : maxLength - 1).trim()}…`
+}
 
 export default function Tour(){
   const { slug } = useParams()
@@ -56,6 +73,11 @@ export default function Tour(){
   if(tour === null) return <div style={{padding:40, color:'#fff'}}>Please Wait</div>
 
   const descriptionHtml = sanitizeRichText(tour.desc || '')
+  const descriptionExcerpt = getPlainTextExcerpt(descriptionHtml)
+  const canonicalTourSlug = getCanonicalTourSlug(tour)
+  const canonicalUrl = canonicalTourSlug
+    ? `https://www.batuwatrip.com/tour/${canonicalTourSlug}`
+    : undefined
 
   const normalizeFurtherInfoSections = (value) => {
     if (Array.isArray(value)) {
@@ -96,7 +118,14 @@ export default function Tour(){
 
   return (
     <>
-      <SEOHead page={`tour-${slug}`} title={`${tour.title} | Batuwa Trip`} description={tour.desc} image={tour.img} />
+      <SEOHead
+        page={`tour-${slug}`}
+        title={`${tour.title} | Batuwa Trip`}
+        description={descriptionExcerpt}
+        image={tour.img}
+        seo={tour.seo}
+        canonical={canonicalUrl}
+      />
       <div className="tour-page">
       <div className="subpage-container__back"><BackButton onClick={() => nav('/')} /></div>
 

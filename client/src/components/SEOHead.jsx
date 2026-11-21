@@ -21,6 +21,19 @@ function getCanonicalUrl(value, pathname, page) {
   }
 }
 
+function getExplicitCanonicalUrl(value) {
+  if (!value) return ''
+
+  try {
+    const url = new URL(value, SITE_URL)
+    if (url.origin !== SITE_URL) return ''
+    if (!/^\/tour\/[a-z0-9]+(?:-[a-z0-9]+)*\/?$/.test(url.pathname)) return ''
+    return `${SITE_URL}${url.pathname.replace(/\/$/, '')}`
+  } catch {
+    return ''
+  }
+}
+
 function getAbsoluteImageUrl(value) {
   try {
     const url = new URL(getImageUrl(value || '/images/logo.jpg', 1200), SITE_URL)
@@ -51,42 +64,73 @@ function upsertLink(rel, href) {
   element.setAttribute('href', href)
 }
 
+function getSeoText(value) {
+  return typeof value === 'string' ? value.trim() : ''
+}
+
 export default function SEOHead({
   page = 'home',
   title = 'Batuwa Trip',
   description = DEFAULT_DESCRIPTION,
   image = '/images/logo.jpg',
   noindex = false,
-  canonical
+  canonical,
+  seo
 }) {
   useEffect(() => {
     let active = true
     const fallback = { title, description, image, noindex, canonical }
+    const tourSeo = seo && typeof seo === 'object' ? seo : {}
+    const tourMetaTitle = getSeoText(tourSeo.metaTitle)
+    const tourMetaDescription = getSeoText(tourSeo.metaDescription)
+    const tourOgTitle = getSeoText(tourSeo.ogTitle)
+    const tourOgDescription = getSeoText(tourSeo.ogDescription)
+    const tourOgImage = getSeoText(tourSeo.ogImage)
+    const tourIndexing = tourSeo.indexing === 'index' || tourSeo.indexing === 'noindex'
+      ? tourSeo.indexing
+      : ''
 
     function applyMetadata(settings = {}) {
-      const resolvedTitle = settings.metaTitle || fallback.title
-      const resolvedDescription = settings.metaDescription || fallback.description
-      const resolvedCanonical = getCanonicalUrl(
+      const resolvedTitle = tourMetaTitle || getSeoText(settings.metaTitle) || fallback.title
+      const resolvedDescription = tourMetaDescription ||
+        getSeoText(settings.metaDescription) ||
+        getSeoText(fallback.description) ||
+        DEFAULT_DESCRIPTION
+      const explicitCanonical = getExplicitCanonicalUrl(fallback.canonical)
+      const resolvedCanonical = explicitCanonical || getCanonicalUrl(
         settings.canonicalUrl || fallback.canonical,
         window.location.pathname,
         page
       )
-      const resolvedImage = getAbsoluteImageUrl(settings.ogImage || fallback.image)
-      const robots = settings.indexing === 'noindex' || fallback.noindex
+      const resolvedOgTitle = tourOgTitle ||
+        getSeoText(settings.ogTitle) ||
+        resolvedTitle
+      const resolvedOgDescription = tourOgDescription ||
+        getSeoText(settings.ogDescription) ||
+        resolvedDescription
+      const resolvedImage = getAbsoluteImageUrl(
+        tourOgImage ||
+        getSeoText(settings.ogImage) ||
+        fallback.image
+      )
+      const resolvedIndexing = tourIndexing ||
+        (settings.indexing === 'index' || settings.indexing === 'noindex' ? settings.indexing : '') ||
+        (fallback.noindex ? 'noindex' : 'index')
+      const robots = resolvedIndexing === 'noindex'
         ? 'noindex, nofollow'
         : 'index, follow'
 
       document.title = resolvedTitle
       upsertMeta('name', 'description', resolvedDescription)
       upsertMeta('name', 'robots', robots)
-      upsertMeta('property', 'og:title', settings.ogTitle || resolvedTitle)
-      upsertMeta('property', 'og:description', settings.ogDescription || resolvedDescription)
+      upsertMeta('property', 'og:title', resolvedOgTitle)
+      upsertMeta('property', 'og:description', resolvedOgDescription)
       upsertMeta('property', 'og:image', resolvedImage)
       upsertMeta('property', 'og:url', resolvedCanonical)
       upsertMeta('property', 'og:type', 'website')
       upsertMeta('name', 'twitter:card', 'summary_large_image')
-      upsertMeta('name', 'twitter:title', settings.ogTitle || resolvedTitle)
-      upsertMeta('name', 'twitter:description', settings.ogDescription || resolvedDescription)
+      upsertMeta('name', 'twitter:title', resolvedOgTitle)
+      upsertMeta('name', 'twitter:description', resolvedOgDescription)
       upsertMeta('name', 'twitter:image', resolvedImage)
       upsertLink('canonical', resolvedCanonical)
     }
@@ -104,7 +148,7 @@ export default function SEOHead({
       })
 
     return () => { active = false }
-  }, [page, title, description, image, noindex, canonical])
+  }, [page, title, description, image, noindex, canonical, seo])
 
   return null
 }

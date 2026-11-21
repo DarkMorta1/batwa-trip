@@ -9,6 +9,15 @@ import { apiRequest, API, authHeaders } from '../../utils/api'
 import { getImageUrl } from '../../utils/imageUrl'
 
 const DESCRIPTION_WORD_LIMIT = 50
+const EMPTY_TOUR_SEO = {
+  metaTitle: '',
+  metaDescription: '',
+  focusKeyword: '',
+  ogTitle: '',
+  ogDescription: '',
+  ogImage: '',
+  indexing: 'index'
+}
 
 function countDescriptionWords(value = '') {
   if (!value) return 0
@@ -31,6 +40,8 @@ export default function ToursPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [selectedTour, setSelectedTour] = useState(null)
   const [statusFilter, setStatusFilter] = useState('all')
+  const [seoData, setSeoData] = useState({ ...EMPTY_TOUR_SEO })
+  const [changedSeoFields, setChangedSeoFields] = useState({})
   const [formData, setFormData] = useState({
     title: '',
     desc: '',
@@ -210,6 +221,11 @@ export default function ToursPage() {
     })
   }
 
+  function updateSeoField(field, value) {
+    setSeoData(current => ({ ...current, [field]: value }))
+    setChangedSeoFields(current => ({ ...current, [field]: true }))
+  }
+
   function openEditModal(tour = null) {
     if (tour) {
       // Normalize itinerary - convert old 'day' to 'dayNumber' if needed
@@ -218,6 +234,7 @@ export default function ToursPage() {
         title: day.title || `Day ${day.dayNumber || day.day || index + 1}`,
         description: day.description || ''
       }))
+      const existingSeo = tour.seo || {}
       
       setFormData({
         ...tour,
@@ -234,6 +251,16 @@ export default function ToursPage() {
           furtherInfo: normalizeFurtherInfoSections(tour.details?.furtherInfo)
         }
       })
+      setSeoData({
+        metaTitle: existingSeo.metaTitle || '',
+        metaDescription: existingSeo.metaDescription || '',
+        focusKeyword: existingSeo.focusKeyword || '',
+        ogTitle: existingSeo.ogTitle || '',
+        ogDescription: existingSeo.ogDescription || '',
+        ogImage: existingSeo.ogImage || '',
+        indexing: existingSeo.indexing === 'noindex' ? 'noindex' : 'index'
+      })
+      setChangedSeoFields({})
       setSelectedTour(tour)
     } else {
       setFormData({
@@ -243,6 +270,8 @@ export default function ToursPage() {
         maxGroupSize: 15, minGroupSize: 2, includes: [], excludes: [], itinerary: [],
         details: { expenses: '', cancellationPolicy: '', highlights: [], requirements: [], furtherInfo: [] }
       })
+      setSeoData({ ...EMPTY_TOUR_SEO })
+      setChangedSeoFields({})
       setSelectedTour(null)
     }
     setShowModal(true)
@@ -275,13 +304,25 @@ export default function ToursPage() {
       }))
 
       const normalizedFurtherInfo = normalizeFurtherInfoSections(formData.details?.furtherInfo)
+      const { seo: _existingSeo, ...normalTourFields } = formData
       const tourData = {
-        ...formData,
+        ...normalTourFields,
         itinerary: normalizedItinerary,
         details: {
           ...formData.details,
           furtherInfo: normalizedFurtherInfo.length > 0 ? normalizedFurtherInfo : ''
         }
+      }
+
+      const changedSeoData = Object.keys(changedSeoFields).reduce((seoUpdate, field) => {
+        if (changedSeoFields[field]) {
+          seoUpdate[field] = seoData[field]
+        }
+        return seoUpdate
+      }, {})
+
+      if (Object.keys(changedSeoData).length > 0) {
+        tourData.seo = changedSeoData
       }
 
       if (selectedTour) {
@@ -768,6 +809,115 @@ function moveItineraryDay(index, direction) {
                 />
               </div>
             </div>
+
+            <details
+              className="admin-card"
+              style={{ padding: '16px', border: '1px solid #e5e7eb', borderRadius: '10px', background: '#f9fafb' }}
+            >
+              <summary
+                style={{
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                  fontWeight: '700',
+                  color: '#111827'
+                }}
+              >
+                SEO Settings
+              </summary>
+
+              <p style={{ margin: '12px 0 16px', color: '#6b7280', fontSize: '13px' }}>
+                SEO fields are optional. Leave them empty to use automatic defaults.
+              </p>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div className="admin-form-group">
+                  <label className="admin-label">
+                    SEO Title <span style={{ fontWeight: 400 }}>({seoData.metaTitle.length}/60)</span>
+                  </label>
+                  <p className="admin-help-text">Suggested length: 50–60 characters.</p>
+                  <input
+                    type="text"
+                    value={seoData.metaTitle}
+                    onChange={e => updateSeoField('metaTitle', e.target.value)}
+                    className="admin-input"
+                    placeholder="Custom title for search engines"
+                  />
+                </div>
+
+                <div className="admin-form-group">
+                  <label className="admin-label">
+                    Focus Keyword
+                  </label>
+                  <input
+                    type="text"
+                    value={seoData.focusKeyword}
+                    onChange={e => updateSeoField('focusKeyword', e.target.value)}
+                    className="admin-input"
+                    placeholder="Main phrase people may search for"
+                  />
+                </div>
+
+                <div className="admin-form-group" style={{ gridColumn: '1 / -1' }}>
+                  <label className="admin-label">
+                    Meta Description <span style={{ fontWeight: 400 }}>({seoData.metaDescription.length}/160)</span>
+                  </label>
+                  <p className="admin-help-text">Suggested length: 150–160 characters.</p>
+                  <textarea
+                    value={seoData.metaDescription}
+                    onChange={e => updateSeoField('metaDescription', e.target.value)}
+                    rows={3}
+                    className="admin-textarea"
+                    placeholder="Short summary for search engine results"
+                  />
+                </div>
+
+                <div className="admin-form-group">
+                  <label className="admin-label">Open Graph Title</label>
+                  <input
+                    type="text"
+                    value={seoData.ogTitle}
+                    onChange={e => updateSeoField('ogTitle', e.target.value)}
+                    className="admin-input"
+                    placeholder="Title for social media sharing"
+                  />
+                </div>
+
+                <div className="admin-form-group">
+                  <label className="admin-label">Open Graph Image URL</label>
+                  <input
+                    type="text"
+                    value={seoData.ogImage}
+                    onChange={e => updateSeoField('ogImage', e.target.value)}
+                    className="admin-input"
+                    placeholder="/images/tour-social-image.jpg"
+                  />
+                </div>
+
+                <div className="admin-form-group" style={{ gridColumn: '1 / -1' }}>
+                  <label className="admin-label">Open Graph Description</label>
+                  <textarea
+                    value={seoData.ogDescription}
+                    onChange={e => updateSeoField('ogDescription', e.target.value)}
+                    rows={3}
+                    className="admin-textarea"
+                    placeholder="Description for social media sharing"
+                  />
+                </div>
+
+                <div className="admin-form-group" style={{ gridColumn: '1 / -1' }}>
+                  <label className="admin-label">Search visibility</label>
+                  <p className="admin-help-text">Choose whether search engines may index this tour.</p>
+                  <select
+                    value={seoData.indexing}
+                    onChange={e => updateSeoField('indexing', e.target.value)}
+                    className="admin-select"
+                  >
+                    <option value="index">Index</option>
+                    <option value="noindex">Noindex</option>
+                  </select>
+                </div>
+              </div>
+            </details>
 
             <div className="admin-form-group">
               <label className="admin-label">Description *</label>

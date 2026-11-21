@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { buildWhatsAppLink } from '../constants/whatsapp'
-import { getTourSlug } from '../utils/tourSlug'
+import { getCanonicalTourSlug } from '../utils/tourSlug'
 import { sanitizeRichText } from './RichTextEditor'
 import { getImageUrl } from '../utils/imageUrl'
 
@@ -11,9 +11,10 @@ export default function TravelCard({ tour, variant }) {
   const nav = useNavigate()
   const [copied, setCopied] = useState(false)
   const tripDescription = variant === 'trips' && tour.desc ? sanitizeRichText(tour.desc) : ''
+  const tourSlug = getCanonicalTourSlug(tour)
 
   const shareTour = useCallback(async () => {
-    const url = `${window.location.origin}/tour/${getTourSlug(tour.title)}`
+    const url = tourSlug ? `${window.location.origin}/tour/${tourSlug}` : window.location.origin
     // Try native share first
     if (navigator.share) {
       try {
@@ -34,7 +35,7 @@ export default function TravelCard({ tour, variant }) {
       // eslint-disable-next-line no-alert
       window.prompt('Copy this link', url)
     }
-  }, [tour])
+  }, [tour, tourSlug])
 
   // voucher validation removed from card; handled on tour detail page
   const customizeMessage = `Hi, I would like to customize a trip.${tour.title ? ` Package: ${tour.title}.` : ''}${tour.location ? ` Destination: ${tour.location}.` : ''}${tour.days ? ` Duration: ${tour.days} days.` : ''}`
@@ -102,7 +103,8 @@ export default function TravelCard({ tour, variant }) {
         <div className="trend-card__actions">
           <button
             className="btn btn--pink trend-card__details"
-            onClick={() => nav(`/tour/${getTourSlug(tour.title)}`)}
+            onClick={() => tourSlug && nav(`/tour/${tourSlug}`)}
+            disabled={!tourSlug}
           >
             Details
           </button>
