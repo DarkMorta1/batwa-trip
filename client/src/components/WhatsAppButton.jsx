@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 // Default WhatsApp number (international, no + or dashes). Update if needed.
-const WHATSAPP_NUMBER = '9779801113349'
+const WHATSAPP_NUMBER = '9779801113350'
 const WHATSAPP_ICON_PATH = '/images/WhatsApp.png'
 
 export default function WhatsAppButton() {
